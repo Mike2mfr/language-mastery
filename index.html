@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Language Mastery</title>
+<meta name="description" content="English, German, Wolof and Martinican Creole in one app: vocabulary trainers, courses and spaced review, all working offline.">
+<meta name="theme-color" content="#F6F2EA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15130F" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Languages">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+@font-face{font-family:"Literata";font-weight:600;font-style:normal;font-display:swap;src:url(german/fonts/literata-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Literata";font-weight:700;font-style:normal;font-display:swap;src:url(german/fonts/literata-latin-700-normal.woff2) format("woff2")}
+:root{
+  --paper:#F6F2EA;--card:#FFFDF9;--ink:#1E1A14;--muted:#6E665A;--line:#E4DCCD;--soft:#EFE8DB;
+  --accent:#1F3A5F;--accent-ink:#fff;--gold:#D9A21B;--ok:#2F7D4A;
+  --en:#17213A;--en2:#FFE15A;--de:#B8321F;--de2:#E8B21F;--wo:#16233B;--wo2:#E0A83A;--cr:#12302D;--cr2:#E7B84C;
+  --shadow:0 1px 2px rgba(40,30,10,.05),0 6px 20px rgba(40,30,10,.07);
+  --f-head:"Literata",Georgia,"Times New Roman",serif;
+  --f-body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#15130F;--card:#1F1C16;--ink:#F1ECE2;--muted:#A89F90;--line:#35302A;--soft:#2A2620;
+  --accent:#8FB0D9;--accent-ink:#0F1626;--gold:#E7B84C;--ok:#6CC38A;
+  --en:#2A3A62;--wo:#223457;--cr:#1C4A45;--de:#C9402C;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 6px 20px rgba(0,0,0,.3);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#15130F;--card:#1F1C16;--ink:#F1ECE2;--muted:#A89F90;--line:#35302A;--soft:#2A2620;
+  --accent:#8FB0D9;--accent-ink:#0F1626;--gold:#E7B84C;--ok:#6CC38A;
+  --en:#2A3A62;--wo:#223457;--cr:#1C4A45;--de:#C9402C;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 6px 20px rgba(0,0,0,.3);color-scheme:dark}
+*{box-sizing:border-box}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--paper);color:var(--ink);font-family:var(--f-body);line-height:1.5;-webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--accent)}
+.wrap{max-width:62rem;margin:0 auto;padding-inline:16px;padding-block:8px 48px}
+header.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:14px 6px}
+.brand{display:flex;align-items:center;gap:12px;margin-right:auto;min-width:0}
+.brand .mark{width:40px;height:40px;border-radius:11px;flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:6px;background:var(--ink)}
+.brand .mark i{display:block;border-radius:3px}
+.brand h1{font-family:var(--f-head);font-weight:700;font-size:1.55rem;line-height:1.1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.brand p{margin:2px 0 0;font-size:.85rem;color:var(--muted)}
+.tools{display:flex;gap:8px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;background:var(--card);padding:3px}
+.seg button{border:0;background:none;padding:5px 12px;border-radius:999px;font-size:.85rem;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 16px;border-radius:12px;font-weight:600;text-decoration:none;min-height:44px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.btn.small{min-height:36px;padding:6px 12px;font-size:.88rem}
+.btn:hover{filter:brightness(.97)}
+.btn svg{width:18px;height:18px;flex:0 0 auto}
+.today{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center}
+.today .eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.today h2{font-family:var(--f-head);font-weight:600;font-size:1.35rem;margin:2px 0 4px;text-wrap:balance}
+.today p{margin:0;color:var(--muted)}
+.kpis{display:flex;gap:18px;flex-wrap:wrap}
+.kpis div{text-align:center;min-width:64px}
+.kpis b{display:block;font-family:var(--f-head);font-size:1.6rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpis span{font-size:.78rem;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.card .band{height:8px;background:var(--c)}
+.card .body{padding:16px 18px 18px;display:grid;gap:12px}
+.card .head{display:flex;align-items:flex-start;gap:12px}
+.card .glyph{width:44px;height:44px;border-radius:12px;flex:0 0 auto;background:var(--c);color:var(--c2);display:grid;place-items:center;font-family:var(--f-head);font-weight:700;font-size:1.05rem;letter-spacing:.02em}
+.card h2{font-family:var(--f-head);font-weight:700;font-size:1.3rem;margin:0;line-height:1.15}
+.card .sub{margin:2px 0 0;color:var(--muted);font-size:.88rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stats div{background:var(--soft);border-radius:10px;padding:8px 10px;min-width:0}
+.stats b{display:block;font-family:var(--f-head);font-size:1.25rem;font-variant-numeric:tabular-nums;line-height:1.15}
+.stats span{font-size:.76rem;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions .btn{flex:1 1 auto}
+.card .btn.primary{background:var(--c);color:#fff}
+.note{font-size:.8rem;color:var(--muted);margin:0}
+.badge{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted);vertical-align:middle}
+.badge.on{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+footer{margin-top:28px;display:grid;gap:14px}
+.backup{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px;display:grid;gap:10px}
+.backup h3{margin:0;font-family:var(--f-head);font-size:1.1rem;font-weight:600}
+.backup p{margin:0;color:var(--muted);font-size:.9rem}
+.backup .row{display:flex;gap:8px;flex-wrap:wrap}
+.msg{font-size:.9rem;margin:0}
+.msg.ok{color:var(--ok)}.msg.bad{color:var(--de)}
+.fine{font-size:.8rem;color:var(--muted);text-align:center;margin:0}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:999px;font-size:.9rem;box-shadow:var(--shadow);z-index:50}
+.mem{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center}
+.mem .eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:6px}
+.mem .eyebrow svg,.actions .btn svg{width:16px;height:16px}
+.mem p{margin:4px 0 8px;color:var(--muted);font-size:.92rem}
+.msteps{list-style:none;margin:0;padding:0;display:flex;gap:6px;flex-wrap:wrap}
+.msteps li{background:var(--soft);border-radius:999px;padding:3px 10px 3px 4px;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:6px}
+.msteps b{width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:.72rem}
+.mem .btn.primary{white-space:nowrap}
+@media (max-width:640px){.mem{grid-template-columns:1fr}}
+.confirm{display:grid;gap:8px;background:var(--soft);border-radius:12px;padding:12px}
+@media (max-width:640px){
+  .today{grid-template-columns:1fr}
+  .kpis{justify-content:space-between}
+  .brand h1{font-size:1.35rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="brand">
+    <div class="mark" aria-hidden="true"><i style="background:#FFE15A"></i><i style="background:#E2563F"></i><i style="background:#E0A83A"></i><i style="background:#3BA27A"></i></div>
+    <div><h1>Language Mastery</h1><p data-t="tag">Four languages, one app</p></div>
+  </div>
+  <div class="tools">
+    <div class="seg" role="group" aria-label="Language of this page"><button data-lang="en" aria-pressed="true">EN</button><button data-lang="fr" aria-pressed="false">FR</button></div>
+    <button class="btn small" id="install" hidden data-t="install">Install</button>
+  </div>
+</header>
+
+<section class="today" id="today"></section>
+<section class="mem" id="mem"></section>
+<section class="grid" id="cards"></section>
+
+<footer>
+  <section class="backup">
+    <h3 data-t="bkTitle">Back up all your progress</h3>
+    <p data-t="bkText">One file holds your progress in all four languages, Memory Method included. Save it somewhere safe now and then, and use it to move to a new phone or computer.</p>
+    <div class="row">
+      <button class="btn" id="exportBtn" data-t="export">Save backup file</button>
+      <label class="btn" for="importFile" data-t="import">Restore from file</label>
+      <input type="file" id="importFile" accept=".json,application/json" hidden>
+    </div>
+    <div id="importBox"></div>
+  </section>
+  <p class="fine" id="fine"></p>
+</footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const VERSION='2026-11-17.mem1';
+const KEYS={english:'wordhoard.v1',german:'lernkartei.v1',course:'deutschLernen.v1',wolof:'wolof-progress-v1',creole:'kreyol-matinik-v1',memory:'lm.memory.v1'};
+const get=k=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}};
+const HUBKEY='lm.hub.v1';
+let H=get(HUBKEY)||{lang:(navigator.language||'en').slice(0,2)==='fr'?'fr':'en'};
+const saveH=()=>{try{localStorage.setItem(HUBKEY,JSON.stringify(H))}catch(e){}};
+
+/* ---------- strings ---------- */
+const T={
+en:{tag:'Four languages, one app',install:'Install',bkTitle:'Back up all your progress',bkText:'One file holds your progress in all four languages, Memory Method included. Save it somewhere safe now and then, and use it to move to a new phone or computer.',export:'Save backup file',import:'Restore from file',
+ due:'due today',learned:'learned',started:'started',streak:'day streak',lessons:'lessons done',units:'units done',cards:'cards',words:'words',open:'Open',flashcards:'Flashcards',course:'Course',
+ todayEyebrow:'Today',allClear:'Nothing is waiting for you — a good day to learn something new.',waiting:n=>`${n} review${n===1?'':'s'} waiting across your languages.`,
+ activeToday:'studied today',todayBadge:'today',totalDue:'due',bestStreak:'best streak',
+ enSub:'Wordhoard · 871 words from three vocabulary courses',deSub:'Lernkartei · 12,711 cards, der·die·das drill, memory palace',deCourse:'Deutsch Lernen · 30-lesson audio course',woSub:'Jàng Wolof · 601 cards in 19 decks, lessons and quizzes',crSub:'Kréyòl Matinik · 14 lessons, exercises, grammar and lexicon',
+ offline:'Works offline once installed',saved:'Backup saved',restoreQ:'Replace the progress on this device with the file?',restoreDetail:'The file contains:',yes:'Yes, restore',no:'Cancel',restored:'Progress restored. Reloading…',badFile:'That file is not a Language Mastery backup.',none:'nothing yet',
+ langs:{english:'English',german:'German',wolof:'Wolof',creole:'Martinican Creole'},
+ memTitle:'Memory Method',memText:'Every language now follows the same routine from Mind Mastery: meet the word, turn it into a picture, place it on a route, recall it at once, then review it at growing gaps.',memSteps:['Meet','Picture','Place','Recall','Space'],memBtn:'Memory Method',memLine:(n,d)=>`Memory Method · ${n} words in memory · ${d} due`,memOpen:'Open the Memory Method'},
+fr:{tag:'Quatre langues, une seule app',install:'Installer',bkTitle:'Sauvegarder toute ta progression',bkText:'Un seul fichier contient ta progression dans les quatre langues. Enregistre-le de temps en temps en lieu sûr, et utilise-le pour changer de téléphone ou d\'ordinateur.',export:'Enregistrer une sauvegarde',import:'Restaurer depuis un fichier',
+ due:'à revoir',learned:'appris',started:'commencés',streak:'jours d\'affilée',lessons:'leçons finies',units:'unités finies',cards:'cartes',words:'mots',open:'Ouvrir',flashcards:'Cartes',course:'Cours',
+ todayEyebrow:'Aujourd\'hui',allClear:'Rien ne t\'attend : une bonne journée pour apprendre du neuf.',waiting:n=>`${n} révision${n===1?'':'s'} en attente, toutes langues confondues.`,
+ activeToday:'étudiées aujourd\'hui',todayBadge:'aujourd\'hui',totalDue:'à revoir',bestStreak:'meilleure série',
+ enSub:'Wordhoard · 871 mots tirés de trois cours de vocabulaire',deSub:'Lernkartei · 12 711 cartes, exercice der·die·das, palais de mémoire',deCourse:'Deutsch Lernen · cours audio en 30 leçons',woSub:'Jàng Wolof · 601 cartes en 19 paquets, leçons et quiz',crSub:'Kréyòl Matinik · 14 leçons, exercices, grammaire et lexique',
+ offline:'Fonctionne hors ligne une fois installée',saved:'Sauvegarde enregistrée',restoreQ:'Remplacer la progression de cet appareil par celle du fichier ?',restoreDetail:'Le fichier contient :',yes:'Oui, restaurer',no:'Annuler',restored:'Progression restaurée. Rechargement…',badFile:'Ce fichier n\'est pas une sauvegarde Language Mastery.',none:'rien pour l\'instant',
+ langs:{english:'Anglais',german:'Allemand',wolof:'Wolof',creole:'Créole martiniquais'},
+ memTitle:'Méthode mémoire',memText:'Chaque langue suit désormais la même routine tirée de Mind Mastery : rencontrer le mot, en faire une image, le placer sur un parcours, le rappeler aussitôt, puis le réviser à intervalles croissants.',memSteps:['Rencontrer','Imager','Placer','Rappeler','Espacer'],memBtn:'Méthode mémoire',memLine:(n,d)=>`Méthode mémoire · ${n} mots en mémoire · ${d} à revoir`,memOpen:'Ouvrir la méthode mémoire'}
+};
+const t=k=>T[H.lang][k];
+
+/* ---------- dates ---------- */
+const DAY=864e5;
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const todayISO=()=>iso(new Date());
+const yestISO=()=>iso(new Date(Date.now()-DAY));
+// Lernkartei and Jàng Wolof roll the day over at 4 am
+const lkDay=(t=Date.now())=>Math.floor((t-new Date(t).getTimezoneOffset()*6e4-4*36e5)/DAY);
+const woDayKey=(t=Date.now())=>{const d=new Date(t);if(d.getHours()<4)d.setDate(d.getDate()-1);d.setHours(4,0,0,0);return iso(d)};
+const woDayStart=(t=Date.now())=>{const d=new Date(t);if(d.getHours()<4)d.setDate(d.getDate()-1);d.setHours(4,0,0,0);return d.getTime()};
+const addDays=(k,n)=>{const [y,m,d]=k.split('-').map(Number);return iso(new Date(y,m-1,d+n))};
+
+/* ---------- read each module's saved progress ---------- */
+function english(){
+  const S=get(KEYS.english);const r={due:0,started:0,learned:0,streak:0,today:false};if(!S)return r;
+  const td=todayISO();
+  for(const e of Object.values(S.w||{})){if(!e||!e.b)continue;r.started++;if(e.b>=3)r.learned++;if(e.d&&e.d<=td)r.due++}
+  const days=S.days||{};r.today=!!(days[td]&&days[td].a);
+  let k=td,n=0;if(!(days[k]&&days[k].a))k=yestISO();while(days[k]&&days[k].a){n++;k=addDays(k,-1)}r.streak=n;return r;
+}
+function german(){
+  const S=get(KEYS.german);const r={due:0,learned:0,streak:0,today:false};if(!S)return r;
+  const d=lkDay(),now=Date.now();
+  for(const x of Object.values(S.srs||{})){if(!Array.isArray(x))continue;if(x[6]>=0){if(!x[7]||x[7]<=now)r.due++}else{r.learned++;if(x[0]<=d)r.due++}}
+  const log=S.log||{};const has=k=>log[k]&&((log[k].rev||0)+(log[k].nw||0))>0;
+  r.today=!!has(d);let k=has(d)?d:d-1,n=0;while(has(k)){n++;k--}r.streak=n;return r;
+}
+function course(){const S=get(KEYS.course);const r={done:0,last:1};if(!S)return r;r.done=Object.keys(S.done||{}).filter(k=>S.done[k]).length;r.last=S.last||1;return r}
+function wolof(){
+  const S=get(KEYS.wolof);const r={due:0,learned:0,streak:0,today:false};if(!S)return r;
+  const now=Date.now(),prod=!(S.settings&&S.settings.prod===false);
+  for(const [k,a] of Object.entries(S.items||{})){if(!Array.isArray(a))continue;if(k.endsWith('|p')&&!prod)continue;const s=a[0],due=a[1];
+    if(s>0&&due<=now)r.due++;if(k.endsWith('|r')&&s===2)r.learned++}
+  const log=S.log||{};const has=k=>log[k]&&((log[k].r||0)+(log[k].q||0))>0;
+  r.today=!!has(woDayKey());let tm=woDayStart();if(!has(woDayKey(tm)))tm-=DAY;let n=0;while(has(woDayKey(tm+3600e3))){n++;tm-=DAY}r.streak=n;return r;
+}
+function creole(){
+  const S=get(KEYS.creole);const r={due:0,units:0,streak:0,today:false};if(!S)return r;
+  const now=Date.now();for(const c of Object.values(S.srs||{}))if(c&&c.due<=now)r.due++;
+  r.units=Object.values(S.units||{}).filter(u=>u&&u.done).length;
+  const td=todayISO();r.today=!!(S.xp&&S.xp.date===td&&S.xp.n>0)||(S.streak&&S.streak.last===td);
+  if(S.streak&&(S.streak.last===td||S.streak.last===yestISO()))r.streak=S.streak.n||0;return r;
+}
+
+function memory(l){const S=get(KEYS.memory);const r={n:0,due:0,today:false};if(!S||!S.lang||!S.lang[l])return r;const now=Date.now();
+  for(const x of Object.values(S.lang[l].it||{})){r.n++;if(x.d<=now)r.due++}
+  const g=(S.lang[l].log||{})[todayISO()];r.today=!!(g&&((g.n||0)+(g.r||0))>0);return r}
+
+/* ---------- render ---------- */
+const BULB='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg>';
+const GRID='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+function stat(v,label,cls){return `<div><b class="${cls||''}">${v}</b><span>${label}</span></div>`}
+function render(){
+  document.documentElement.lang=H.lang;
+  document.querySelectorAll('[data-t]').forEach(el=>{el.textContent=t(el.dataset.t)});
+  document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===H.lang)));
+  const en=english(),de=german(),dc=course(),wo=wolof(),cr=creole();
+  const me=memory('en'),md=memory('de'),mw=memory('wo'),mk=memory('kr');
+  [[en,me],[de,md],[wo,mw],[cr,mk]].forEach(([a,b])=>{if(b.today)a.today=true});
+  const due=en.due+de.due+wo.due+cr.due+me.due+md.due+mw.due+mk.due;
+  const active=[en,de,wo,cr].filter(x=>x.today).length;
+  const best=Math.max(en.streak,de.streak,wo.streak,cr.streak);
+  $('#today').innerHTML=`<div><div class="eyebrow">${t('todayEyebrow')}</div><h2>${new Date().toLocaleDateString(H.lang==='fr'?'fr-FR':'en-GB',{weekday:'long',day:'numeric',month:'long'})}</h2><p>${due?t('waiting')(due):t('allClear')}</p></div>
+    <div class="kpis">${stat(due,t('totalDue'))}${stat(active+'/4',t('activeToday'))}${stat(best,t('bestStreak'))}</div>`;
+  const L=t('langs');
+  const memRow=(code,m)=>`<a class="btn" href="memory/index.html?l=${code}">${BULB} ${t('memBtn')}</a>`;
+  const memNote=m=>`<p class="note">${t('memLine')(m.n,m.due)}</p>`;
+  const todayBadge=x=>x.today?`<span class="badge on">✓ ${t('todayBadge')}</span>`:'';
+  $('#cards').innerHTML=`
+  <article class="card" style="--c:var(--en);--c2:var(--en2)"><div class="band"></div><div class="body">
+    <div class="head"><div class="glyph">EN</div><div><h2>${L.english} ${todayBadge(en)}</h2><p class="sub">${t('enSub')}</p></div></div>
+    <div class="stats">${stat(en.due,t('due'),'due')}${stat(en.started,t('started'))}${stat(en.streak,t('streak'))}</div>
+    <div class="actions"><a class="btn primary" href="english/index.html">${t('open')} Wordhoard ${GRID}</a>${memRow('en',me)}</div>${memNote(me)}
+  </div></article>
+  <article class="card" style="--c:var(--de);--c2:var(--de2)"><div class="band"></div><div class="body">
+    <div class="head"><div class="glyph">DE</div><div><h2>${L.german} ${todayBadge(de)}</h2><p class="sub">${t('deSub')}</p></div></div>
+    <div class="stats">${stat(de.due,t('due'),'due')}${stat(de.learned,t('learned'))}${stat(de.streak,t('streak'))}</div>
+    <div class="actions"><a class="btn primary" href="german/index.html">${t('flashcards')} · Lernkartei ${GRID}</a><a class="btn" href="german/course/index.html">${t('course')} · Deutsch Lernen</a>${memRow('de',md)}</div>
+    <p class="note">${t('deCourse')} · ${dc.done}/30 ${t('lessons')}</p>${memNote(md)}
+  </div></article>
+  <article class="card" style="--c:var(--wo);--c2:var(--wo2)"><div class="band"></div><div class="body">
+    <div class="head"><div class="glyph">WO</div><div><h2>${L.wolof} ${todayBadge(wo)}</h2><p class="sub">${t('woSub')}</p></div></div>
+    <div class="stats">${stat(wo.due,t('due'),'due')}${stat(wo.learned,t('learned'))}${stat(wo.streak,t('streak'))}</div>
+    <div class="actions"><a class="btn primary" href="wolof/index.html">${t('open')} Jàng Wolof ${GRID}</a>${memRow('wo',mw)}</div>${memNote(mw)}
+  </div></article>
+  <article class="card" style="--c:var(--cr);--c2:var(--cr2)"><div class="band"></div><div class="body">
+    <div class="head"><div class="glyph">KR</div><div><h2>${L.creole} ${todayBadge(cr)}</h2><p class="sub">${t('crSub')}</p></div></div>
+    <div class="stats">${stat(cr.due,t('due'),'due')}${stat(cr.units+'/14',t('units'))}${stat(cr.streak,t('streak'))}</div>
+    <div class="actions"><a class="btn primary" href="creole/index.html">${t('open')} Kréyòl Matinik ${GRID}</a>${memRow('kr',mk)}</div>${memNote(mk)}
+  </div></article>`;
+  $('#mem').innerHTML=`<div><div class="eyebrow">${BULB} ${t('memTitle')}</div><p>${t('memText')}</p><ol class="msteps">${t('memSteps').map((s,i)=>`<li><b>${i+1}</b>${s}</li>`).join('')}</ol></div><a class="btn primary" href="memory/index.html">${t('memOpen')}</a>`;
+  $('#fine').textContent=`Language Mastery · ${VERSION} · ${t('offline')}`;
+}
+document.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>{H.lang=b.dataset.lang;saveH();render()});
+
+/* ---------- backup ---------- */
+let toastT;function toast(m){let el=$('.toast');if(!el){el=document.createElement('div');el.className='toast';el.setAttribute('role','status');document.body.append(el)}el.textContent=m;clearTimeout(toastT);toastT=setTimeout(()=>el.remove(),2600)}
+function bundle(){const o={app:'language-mastery',v:1,date:new Date().toISOString(),data:{}};for(const [name,k] of Object.entries(KEYS)){const v=localStorage.getItem(k);if(v)o.data[name]=v}o.data.hub=localStorage.getItem(HUBKEY)||'';return o}
+$('#exportBtn').onclick=()=>{
+  const o=bundle();const blob=new Blob([JSON.stringify(o)],{type:'application/json'});const name='language-mastery-'+todayISO()+'.json';
+  const f=new File([blob],name,{type:'application/json'});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:name}).then(()=>toast(t('saved'))).catch(()=>download(blob,name));return}
+  download(blob,name);
+};
+function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast(t('saved'))}
+$('#importFile').onchange=e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;const box=$('#importBox');
+  const fr=new FileReader();
+  fr.onload=()=>{
+    let o=null;try{o=JSON.parse(fr.result)}catch(x){}
+    if(!o||o.app!=='language-mastery'||!o.data){box.innerHTML=`<p class="msg bad">${t('badFile')}</p>`;return}
+    const names={english:'Wordhoard',german:'Lernkartei',course:'Deutsch Lernen',wolof:'Jàng Wolof',creole:'Kréyòl Matinik',memory:H.lang==='fr'?'Méthode mémoire':'Memory Method'};
+    const has=Object.keys(names).filter(k=>o.data[k]).map(k=>names[k]);
+    box.innerHTML=`<div class="confirm"><p class="msg">${t('restoreQ')}</p><p class="msg">${t('restoreDetail')} ${esc(has.join(', ')||t('none'))} · ${esc((o.date||'').slice(0,10))}</p><div class="row"><button class="btn small" id="rNo">${t('no')}</button><button class="btn small primary" id="rYes">${t('yes')}</button></div></div>`;
+    $('#rNo').onclick=()=>box.innerHTML='';
+    $('#rYes').onclick=()=>{try{for(const [name,k] of Object.entries(KEYS)){if(o.data[name])localStorage.setItem(k,o.data[name])}if(o.data.hub)localStorage.setItem(HUBKEY,o.data.hub)}catch(x){}
+      box.innerHTML=`<p class="msg ok">${t('restored')}</p>`;setTimeout(()=>location.reload(),900)};
+  };
+  fr.onerror=()=>box.innerHTML=`<p class="msg bad">${t('badFile')}</p>`;
+  fr.readAsText(f);
+};
+
+/* ---------- install + offline ---------- */
+let installEvt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;$('#install').hidden=false});
+$('#install').onclick=async()=>{if(!installEvt)return;installEvt.prompt();await installEvt.userChoice;installEvt=null;$('#install').hidden=true};
+window.addEventListener('appinstalled',()=>{$('#install').hidden=true});
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+
+render();
+window.addEventListener('pageshow',render);
+window.addEventListener('focus',render);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')render()});
+})();
+</script>
+</body>
+</html>

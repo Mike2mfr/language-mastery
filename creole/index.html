@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kréyòl Matinik</title>
+<meta name="description" content="Apprendre le créole martiniquais : leçons, exercices, révisions espacées, grammaire et lexique.">
+<meta name="theme-color" content="#12302D" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1A19" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kréyòl">
+<link rel="preload" href="fonts/young-serif-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/atkinson-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../lm.css">
+</head>
+<body>
+<div class="app" id="app">
+  <div class="madras" aria-hidden="true"></div>
+  <header class="top">
+    <a class="lm-home lm-sb" href="../index.html" aria-label="Language Mastery" title="Language Mastery"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg></a><a class="lm-home lm-mem lm-sb2" href="../memory/index.html?l=kr" aria-label="Memory Method" title="Memory Method"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></a>
+    <h1>Kréyòl Matinik<small>Apprendre le créole martiniquais</small></h1>
+    <div class="chips">
+      <span class="chip" title="Jours d'affilée"><span class="dot" style="background:var(--hib)"></span><span id="streak">0</span> j</span>
+      <span class="chip" title="Points aujourd'hui"><span class="dot" style="background:var(--gold)"></span><span id="xpToday">0</span> pts</span>
+    </div>
+  </header>
+  <main id="main"></main>
+</div>
+
+<nav class="tabs" id="tabs" aria-label="Navigation">
+  <div class="in">
+    <button data-tab="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="M4 19c3-6 5-9 8-9s5 3 8 9"/><circle cx="12" cy="6" r="2"/></svg>Parcours</button>
+    <button data-tab="review"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="13" height="15" rx="2"/><path d="M8 3h11a1 1 0 0 1 1 1v13"/></svg>Révision<span class="badge" id="dueBadge" hidden>0</span></button>
+    <button data-tab="grammar"><svg viewBox="0 0 24 24"><path d="M4 5h6a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4z"/><path d="M20 5h-6a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h6z"/></svg>Grammaire</button>
+    <button data-tab="lex"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>Lexique</button>
+  </div>
+</nav>
+<script src="app.js"></script>
+</body>
+</html>

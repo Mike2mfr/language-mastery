@@ -1,0 +1,10 @@
+/* Language Mastery — shared "home" button shown inside every module */
+.lm-home{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:38px;height:38px;border-radius:50%;color:inherit;text-decoration:none;border:1px solid rgba(128,128,128,.4);background:rgba(128,128,128,.1);transition:background .15s}
+.lm-home:hover,.lm-home:focus-visible{background:rgba(128,128,128,.25);outline:none}
+.lm-home svg{width:18px;height:18px;display:block}
+.lm-sb + *{margin-right:auto}
+
+/* Memory Method button, next to the home button */
+.lm-mem{margin-left:6px}
+.lm-sb + .lm-mem{margin-right:auto}
+.lm-sb + .lm-mem + *{margin-right:0}

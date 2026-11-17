@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<defs><clipPath id="c"><rect width="512" height="512" rx="0"/></clipPath>
+<pattern id="w" width="68" height="40" patternUnits="userSpaceOnUse"><rect width="68" height="40" fill="#16233B"/><rect width="28" height="40" fill="#D99A06"/><rect x="36" width="24" height="40" fill="#1C7A55"/></pattern></defs>
+<g clip-path="url(#c)"><rect width="512" height="512" fill="#16233B"/>
+<rect y="486" width="512" height="40" fill="url(#w)"/>
+<g transform="translate(56.31999999999999 56.31999999999999) scale(0.78)">
+<rect x="150" y="96" width="250" height="310" rx="34" fill="#F2F3EE" opacity=".22" transform="rotate(9 275 251)"/>
+<rect x="118" y="92" width="250" height="310" rx="34" fill="#D99A06" transform="rotate(-6 243 247)"/>
+<text x="243" y="318" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="230" fill="#16233B" transform="rotate(-6 243 247)">ñ</text>
+</g></g></svg>

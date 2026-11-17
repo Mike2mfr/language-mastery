@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Memory Method · Language Mastery</title>
+<meta name="theme-color" content="#F6F2EA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15130F" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="stylesheet" href="../lm.css">
+<style>
+@font-face{font-family:"Literata";font-weight:600;font-style:normal;font-display:swap;src:url(../german/fonts/literata-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Literata";font-weight:700;font-style:normal;font-display:swap;src:url(../german/fonts/literata-latin-700-normal.woff2) format("woff2")}
+/* Layout idea: the hub's warm paper look; each language keeps its own colour band; the session is one focused card at a time. */
+:root{
+  --paper:#F6F2EA;--card:#FFFDF9;--ink:#1E1A14;--muted:#6E665A;--line:#E4DCCD;--soft:#EFE8DB;
+  --accent:#1F3A5F;--ok:#2F7D4A;--bad:#B8321F;--hi:#FFE15A;--hi-ink:#2A2300;
+  --der:#2F5BA8;--die:#C0392B;--das:#2E8B57;
+  --c:#1F3A5F;--c2:#FFE15A;
+  --shadow:0 1px 2px rgba(40,30,10,.05),0 6px 20px rgba(40,30,10,.07);
+  --f-head:"Literata",Georgia,"Times New Roman",serif;
+  --f-body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#15130F;--card:#1F1C16;--ink:#F1ECE2;--muted:#A89F90;--line:#35302A;--soft:#2A2620;
+  --accent:#8FB0D9;--ok:#6CC38A;--bad:#FF8A78;--der:#7EA6F0;--die:#FF8A78;--das:#6CC38A;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 6px 20px rgba(0,0,0,.3);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#15130F;--card:#1F1C16;--ink:#F1ECE2;--muted:#A89F90;--line:#35302A;--soft:#2A2620;
+  --accent:#8FB0D9;--ok:#6CC38A;--bad:#FF8A78;--der:#7EA6F0;--die:#FF8A78;--das:#6CC38A;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 6px 20px rgba(0,0,0,.3);color-scheme:dark}
+body[data-l="en"]{--c:#17213A;--c2:#FFE15A}
+body[data-l="de"]{--c:#B8321F;--c2:#E8B21F}
+body[data-l="wo"]{--c:#16233B;--c2:#E0A83A}
+body[data-l="kr"]{--c:#12302D;--c2:#E7B84C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body[data-l="en"]{--c:#3A4F86}:root:not([data-theme="light"]) body[data-l="wo"]{--c:#34507F}:root:not([data-theme="light"]) body[data-l="kr"]{--c:#2B6B63}}
+*{box-sizing:border-box}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--paper);color:var(--ink);font-family:var(--f-body);line-height:1.5;-webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--accent)}
+.wrap{max-width:46rem;margin:0 auto;padding:8px 16px 64px}
+header.top{display:flex;align-items:center;gap:10px;padding:12px 0 6px;flex-wrap:wrap}
+header.top h1{font-family:var(--f-head);font-weight:700;font-size:1.3rem;margin:0;line-height:1.15;margin-right:auto;text-wrap:balance}
+header.top h1 small{display:block;font-family:var(--f-body);font-weight:500;font-size:.8rem;color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;background:var(--card);padding:3px;flex-wrap:wrap}
+.seg button{border:0;background:none;padding:5px 11px;border-radius:999px;font-size:.85rem;font-weight:700;color:var(--muted);min-height:32px}
+.seg button[aria-pressed="true"]{background:var(--c);color:#fff}
+.langs{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap}
+.langs button{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:6px 12px;font-weight:700;min-height:40px;display:flex;align-items:center;gap:6px}
+.langs button i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.langs button[aria-pressed="true"]{border-color:var(--c);box-shadow:inset 0 0 0 1.5px var(--c)}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin:10px 0 16px;scrollbar-width:none}
+nav.tabs button{border:0;background:none;padding:10px 12px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap;min-height:44px}
+nav.tabs button[aria-current="page"]{color:var(--ink);border-bottom-color:var(--c)}
+h2{font-family:var(--f-head);font-weight:700;font-size:1.35rem;margin:0;line-height:1.2;text-wrap:balance}
+h3{font-family:var(--f-head);font-weight:600;font-size:1.08rem;margin:0;text-wrap:balance}
+p{margin:0}
+.stack{display:grid;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px;box-shadow:var(--shadow);display:grid;gap:10px;min-width:0}
+.card.band{border-top:6px solid var(--c)}
+.muted{color:var(--muted)}.small{font-size:.86rem}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row.between{justify-content:space-between}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--card);padding:10px 16px;border-radius:12px;font-weight:700;text-decoration:none;color:var(--ink);min-height:44px}
+.btn.primary{background:var(--c);border-color:var(--c);color:#fff}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.small{min-height:36px;padding:6px 12px;font-size:.88rem}
+.btn:disabled{opacity:.45;cursor:default}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.kpis div{background:var(--soft);border-radius:12px;padding:8px 10px}
+.kpis b{display:block;font-family:var(--f-head);font-size:1.4rem;font-variant-numeric:tabular-nums;line-height:1.15}
+.kpis span{font-size:.76rem;color:var(--muted)}
+.steps5{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.steps5 div{background:var(--soft);border-radius:10px;padding:8px;text-align:center;font-size:.78rem;line-height:1.25}
+.steps5 b{display:block;font-family:var(--f-head);font-size:1rem}
+.steps5 .on{background:var(--c);color:#fff}
+.word{font-family:var(--f-head);font-weight:700;font-size:clamp(1.7rem,7vw,2.4rem);line-height:1.15;overflow-wrap:anywhere}
+.pron{color:var(--muted);font-size:.95rem}
+.mean{font-size:1.1rem}
+.ex{border-left:3px solid var(--line);padding-left:10px;font-size:.95rem}
+.ex i{color:var(--muted);display:block;font-style:normal;font-size:.88rem}
+.g-der{color:var(--der)}.g-die{color:var(--die)}.g-das{color:var(--das)}
+.gpill{display:inline-block;font-size:.75rem;font-weight:800;color:#fff;border-radius:999px;padding:2px 9px;vertical-align:middle}
+.gpill.der{background:var(--der)}.gpill.die{background:var(--die)}.gpill.das{background:var(--das)}
+.tag{display:inline-block;font-size:.74rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.tag.c{background:var(--c);color:#fff}
+.stop{display:flex;gap:10px;align-items:center;background:var(--soft);border-radius:12px;padding:10px 12px}
+.stop b.n{width:28px;height:28px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-size:.85rem;flex:0 0 auto}
+label{display:grid;gap:4px;font-weight:600;font-size:.88rem}
+input[type=text],textarea,select{width:100%;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:76px;resize:vertical}
+.hint{background:color-mix(in srgb,var(--c2) 30%,var(--card));border-radius:12px;padding:10px 12px;font-size:.93rem}
+.hint b{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.fb{border-radius:12px;padding:10px 12px;font-weight:600}
+.fb.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+.fb.bad{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+.fb.mid{background:var(--soft);color:var(--ink)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.choice{text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px;min-height:48px}
+.choice.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,var(--card))}
+.choice.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--card))}
+.gbtn{min-width:72px;font-weight:800;border:2px solid var(--line);background:var(--card);border-radius:10px;min-height:44px}
+.gbtn[aria-pressed="true"].der{background:var(--der);border-color:var(--der);color:#fff}
+.gbtn[aria-pressed="true"].die{background:var(--die);border-color:var(--die);color:#fff}
+.gbtn[aria-pressed="true"].das{background:var(--das);border-color:var(--das);color:#fff}
+.bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden}.bar i{display:block;height:100%;background:var(--c)}
+.list{display:grid}
+.li{display:flex;gap:10px;align-items:flex-start;padding:10px 2px;border-bottom:1px solid var(--line)}
+.li:last-child{border-bottom:0}
+.li .t{flex:1;min-width:0}
+.say{border:1px solid var(--line);background:var(--card);border-radius:999px;width:40px;height:40px;display:inline-grid;place-items:center;flex:0 0 auto}
+.say svg{width:18px;height:18px}
+table{border-collapse:collapse;width:100%}
+td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:.93rem}
+th{font-size:.78rem;color:var(--muted);font-weight:700}
+.num{font-family:var(--f-head);font-weight:700;font-size:1.15rem;font-variant-numeric:tabular-nums}
+.scroll-x{overflow-x:auto}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:999px;font-size:.9rem;box-shadow:var(--shadow);z-index:50;max-width:90vw}
+.src{padding:8px 0;border-bottom:1px solid var(--line)}.src:last-child{border-bottom:0}
+details summary{cursor:pointer;font-weight:700}
+.big-num{font-family:var(--f-head);font-weight:700;font-size:3rem;text-align:center;line-height:1.1}
+@media (max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}.steps5 div{font-size:.7rem;padding:6px 4px}}
+@media (prefers-reduced-motion:no-preference){.btn,.choice{transition:transform .1s}.btn:active,.choice:active{transform:scale(.98)}}
+</style>
+</head>
+<body data-l="de">
+<div class="wrap">
+<header class="top">
+  <a class="lm-home" href="../index.html" aria-label="Language Mastery" title="Language Mastery"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></a>
+  <h1 id="title">Memory Method<small id="subtitle"></small></h1>
+  <div class="seg" role="group" aria-label="Interface language"><button data-ui="en">EN</button><button data-ui="fr">FR</button></div>
+</header>
+<div class="langs" id="langs" role="group" aria-label="Language to study"></div>
+<nav class="tabs" id="tabs" aria-label="Sections"></nav>
+<main id="main" class="stack"></main>
+</div>
+<script>
+(function(){
+'use strict';
+/* ================= helpers ================= */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const DAY=864e5,HOUR=36e5;
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const today=()=>iso(new Date());
+function dayStart(t=Date.now()){const d=new Date(t);if(d.getHours()<4)d.setDate(d.getDate()-1);d.setHours(4,0,0,0);return d.getTime()}
+function norm(s){return String(s||'').toLowerCase().replace(/ß/g,'ss').replace(/ŋ/g,'ng').replace(/[’']/g,'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\([^)]*\)/g,' ').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=[...Array(n+1).keys()];for(let i=1;i<=m;i++){let c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
+let toastT;function toast(m){let el=$('.toast');if(!el){el=document.createElement('div');el.className='toast';el.setAttribute('role','status');document.body.append(el)}el.textContent=m;clearTimeout(toastT);toastT=setTimeout(()=>el.remove(),2600)}
+const SPK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
+
+/* ================= interface language ================= */
+const HUBKEY='lm.hub.v1';
+let HUB={};try{HUB=JSON.parse(localStorage.getItem(HUBKEY)||'{}')||{}}catch(e){}
+let UI=HUB.lang==='fr'||HUB.lang==='en'?HUB.lang:((navigator.language||'en').slice(0,2)==='fr'?'fr':'en');
+const T={
+en:{title:'Memory Method',sub:'The Mind Mastery techniques, applied to every language',
+ tabs:{today:'Today',learn:'Learn',review:'Review',palace:'Route',numbers:'Numbers',roots:'Roots',images:'My images',method:'Method'},
+ L:{en:'English',de:'German',wo:'Wolof',kr:'Creole'},
+ due:'due now',learned:'in memory',newToday:'new today',streak:'day streak',
+ steps:[['Meet','hear, say, see'],['Picture','sound-alike + image'],['Place','on your route'],['Recall','walk the route'],['Space','review at the right time']],
+ todayTitle:'Today’s session',todayDue:n=>`${n} word${n===1?' is':'s are'} ready for review. Do these first: they are about to fade.`,todayNone:'No reviews waiting. A good moment to learn a new chunk.',
+ startReview:'Review now',startLearn:n=>`Learn ${n} new words`,
+ fastTitle:'Before you start: FAST',fast:['Forget: set aside what you think you know and anything that is not urgent.','Active: say every word out loud and answer before you look.','State: sit up, breathe in slowly, decide to enjoy it.','Teach: at the end, use one word in a sentence of your own.'],
+ loading:'Loading words…',loadFail:'Could not load the word list. Open the language once while online, then try again.',
+ deck:'Word set',chunk:'Chunk size',chunkHelp:'Five words at a time is the default: small chunks, fully learned, beat long lists.',start:'Start',left:n=>`${n} new in this set`,allLearned:'Every word in this set is already in memory. Pick another set.',
+ meetEy:(i,n)=>`Word ${i} of ${n} · Meet it`,listen:'Listen',sayIt:'Say it out loud twice.',
+ kw:'Sound-alike keyword',kwPh:'A word in your language that sounds like it',pic:'Your picture',picPh:'One vivid scene that joins the keyword to the meaning: big, moving, a bit absurd',
+ suggested:'Suggested from your course',useSugg:'Use this',
+ placeEy:'Place it',placeTxt:(s,n)=>`Put your picture at stop ${n} of your route: <b>${esc(s)}</b>. See it there for a few seconds, touching or wrecking the place.`,
+ gcue:{der:'der word: make the whole scene blue and heavy, as if made of iron.',die:'die word: make it red and burning.',das:'das word: make it green, like a plant growing over it.'},
+ easy:'I already know this one',next:'Placed it, next',
+ walkEy:'Recall · walk your route',walkTxt:'Go back to the first stop. For each place, produce the word you left there. Type it, or say it and check.',
+ answer:'Your answer',check:'Check',show:'Show answer',knew:'I knew it',didnt:'I didn’t',
+ right:'Right',almost:w=>`Right (spelling: ${w})`,wrong:w=>`It was: ${w}`,genderWrong:(g)=>`Word right, article wrong: it is ${g}.`,
+ fixEy:'Fix the gaps',fixTxt:'Make a fresh, stronger picture for the ones you missed, then recall them again.',again:'Recall again',
+ checkEy:'Check the meaning',useEy:'Use it',useTxt:'Write one sentence of your own with one of today’s words. Teaching and using a word is the fastest way to own it.',sentencePh:'Your sentence',saveFinish:'Save and finish',skipFinish:'Finish without a sentence',
+ doneTitle:n=>`${n} new word${n===1?'':'s'} in memory`,doneTxt:'They come back later today, then tomorrow, then at longer gaps: 3, 7, 14, 30, 60 and 120 days. Each review that works pushes the next one further away.',
+ backToday:'Back to Today',moreLearn:'Learn another chunk',
+ revEy:(i,n)=>`Review ${i} of ${n}`,revPrompt:'What is the word for:',hintBtn:'Show my picture',hint2:'First letter',noHook:'No picture saved yet for this word. Add one below so next time you have a hook.',
+ revDone:(n,ok)=>`${n} reviewed · ${ok} recalled without help`,revNone:'Nothing due right now.',
+ nextDue:'Next review',inSoon:'later today',inDays:n=>`in ${n} day${n===1?'':'s'}`,
+ routeTitle:'Your route for this language',routeTxt:'Ten stops through a place you know well, always walked in the same order. Each language gets its own route so the pictures do not collide. Rename the stops to match a real place.',
+ routeSave:'Save route',routeSaved:'Route saved',lastPlaced:'On the route from your last session',empty:'Nothing placed yet.',
+ imgsTitle:'Your memory images',imgsTxt:'Every keyword and picture you have made. Edit any that feel weak: a sharper picture is the fastest fix for a word you keep missing.',search:'Search',noImgs:'No pictures yet. They appear here as you learn.',
+ box:b=>`level ${b}`,
+ numTitle:'Numbers with the peg method',numTxt:'Numbers 1–10 hang on the Sun list: one picture each that you already know. Link the word for each number to its peg, then drill.',
+ peg:'Peg',link:'Your link',drill:'Drill numbers',drillTitle:'Say or type the number word',numDone:(ok,n)=>`${ok} of ${n} right`,
+ rootsTitle:'Roots as pictures',rootsTxt:'Most hard English words are built from a few Latin and Greek parts. Each root has a key word you can picture: fac = factory, things being made. Learn the root once and it unlocks dozens of words.',rootsDrill:'Drill roots',rootQ:'What does this root mean?',keyWord:'Key word',
+ settings:'Settings',typeMode:'Answer by typing',selfMode:'Say it and check myself',daily:'New words per day',
+ methodTitle:'How this language uses the techniques',routine:'The routine for every word',
+ sources:'Sources',course:'From your course',
+ newDue:'new',dueLbl:'due'},
+fr:{title:'Méthode mémoire',sub:'Les techniques de Mind Mastery, appliquées à chaque langue',
+ tabs:{today:'Aujourd’hui',learn:'Apprendre',review:'Réviser',palace:'Parcours',numbers:'Nombres',roots:'Racines',images:'Mes images',method:'Méthode'},
+ L:{en:'Anglais',de:'Allemand',wo:'Wolof',kr:'Créole'},
+ due:'à revoir',learned:'en mémoire',newToday:'nouveaux aujourd’hui',streak:'jours d’affilée',
+ steps:[['Rencontrer','écouter, dire, voir'],['Imager','mot-clé + image'],['Placer','sur ton parcours'],['Rappeler','refaire le parcours'],['Espacer','réviser au bon moment']],
+ todayTitle:'La séance du jour',todayDue:n=>`${n} mot${n===1?' est prêt':'s sont prêts'} à revoir. Commence par eux : ils sont en train de s’effacer.`,todayNone:'Aucune révision en attente. Bon moment pour apprendre un nouveau lot.',
+ startReview:'Réviser maintenant',startLearn:n=>`Apprendre ${n} nouveaux mots`,
+ fastTitle:'Avant de commencer : FAST',fast:['Forget (oublie) : mets de côté ce que tu crois savoir et tout ce qui n’est pas urgent.','Active : dis chaque mot à voix haute et réponds avant de regarder.','State (état) : redresse-toi, inspire lentement, décide d’y prendre plaisir.','Teach (enseigne) : à la fin, utilise un mot dans une phrase à toi.'],
+ loading:'Chargement des mots…',loadFail:'Impossible de charger la liste. Ouvre cette langue une fois en ligne, puis réessaie.',
+ deck:'Lot de mots',chunk:'Taille du lot',chunkHelp:'Cinq mots à la fois par défaut : de petits lots bien appris valent mieux que de longues listes.',start:'Commencer',left:n=>`${n} nouveaux dans ce lot`,allLearned:'Tous les mots de ce lot sont déjà en mémoire. Choisis-en un autre.',
+ meetEy:(i,n)=>`Mot ${i} sur ${n} · Le rencontrer`,listen:'Écouter',sayIt:'Dis-le deux fois à voix haute.',
+ kw:'Mot-clé qui sonne pareil',kwPh:'Un mot de ta langue qui sonne comme lui',pic:'Ton image',picPh:'Une scène vive qui relie le mot-clé au sens : grande, en mouvement, un peu absurde',
+ suggested:'Suggéré par ton cours',useSugg:'Utiliser',
+ placeEy:'Le placer',placeTxt:(s,n)=>`Pose ton image à l’étape ${n} de ton parcours : <b>${esc(s)}</b>. Vois-la là quelques secondes, en contact avec le lieu.`,
+ gcue:{der:'mot en der : rends toute la scène bleue et lourde, comme en fer.',die:'mot en die : rends-la rouge et en feu.',das:'mot en das : rends-la verte, comme une plante qui pousse dessus.'},
+ easy:'Je le connais déjà',next:'Placé, suivant',
+ walkEy:'Rappel · refais ton parcours',walkTxt:'Reviens à la première étape. À chaque lieu, retrouve le mot que tu y as laissé. Tape-le, ou dis-le puis vérifie.',
+ answer:'Ta réponse',check:'Vérifier',show:'Voir la réponse',knew:'Je le savais',didnt:'Je ne savais pas',
+ right:'Juste',almost:w=>`Juste (orthographe : ${w})`,wrong:w=>`C’était : ${w}`,genderWrong:(g)=>`Mot juste, article faux : c’est ${g}.`,
+ fixEy:'Combler les trous',fixTxt:'Fais une image neuve et plus forte pour les mots manqués, puis rappelle-les encore.',again:'Rappeler à nouveau',
+ checkEy:'Vérifier le sens',useEy:'L’utiliser',useTxt:'Écris une phrase à toi avec un des mots du jour. Utiliser et enseigner un mot, c’est le moyen le plus rapide de se l’approprier.',sentencePh:'Ta phrase',saveFinish:'Enregistrer et terminer',skipFinish:'Terminer sans phrase',
+ doneTitle:n=>`${n} nouveau${n===1?' mot':'x mots'} en mémoire`,doneTxt:'Ils reviennent plus tard aujourd’hui, puis demain, puis à intervalles plus longs : 3, 7, 14, 30, 60 et 120 jours. Chaque révision réussie repousse la suivante.',
+ backToday:'Retour à Aujourd’hui',moreLearn:'Apprendre un autre lot',
+ revEy:(i,n)=>`Révision ${i} sur ${n}`,revPrompt:'Quel est le mot pour :',hintBtn:'Voir mon image',hint2:'Première lettre',noHook:'Pas encore d’image pour ce mot. Ajoute-en une ci-dessous pour avoir un crochet la prochaine fois.',
+ revDone:(n,ok)=>`${n} révisés · ${ok} retrouvés sans aide`,revNone:'Rien à revoir pour l’instant.',
+ nextDue:'Prochaine révision',inSoon:'plus tard aujourd’hui',inDays:n=>`dans ${n} jour${n===1?'':'s'}`,
+ routeTitle:'Ton parcours pour cette langue',routeTxt:'Dix étapes dans un lieu que tu connais bien, toujours dans le même ordre. Chaque langue a son propre parcours pour que les images ne se mélangent pas. Renomme les étapes d’après un vrai lieu.',
+ routeSave:'Enregistrer le parcours',routeSaved:'Parcours enregistré',lastPlaced:'Sur le parcours depuis ta dernière séance',empty:'Rien de placé pour l’instant.',
+ imgsTitle:'Tes images mémoire',imgsTxt:'Tous tes mots-clés et images. Retouche ceux qui sont faibles : une image plus nette est le remède le plus rapide pour un mot que tu rates souvent.',search:'Rechercher',noImgs:'Pas encore d’images. Elles apparaissent ici au fil de l’apprentissage.',
+ box:b=>`niveau ${b}`,
+ numTitle:'Les nombres avec la méthode des crochets',numTxt:'Les nombres 1 à 10 s’accrochent à la liste du Soleil : une image que tu connais déjà pour chacun. Relie le mot de chaque nombre à son crochet, puis entraîne-toi.',
+ peg:'Crochet',link:'Ton lien',drill:'Entraînement',drillTitle:'Dis ou tape le mot du nombre',numDone:(ok,n)=>`${ok} sur ${n} justes`,
+ rootsTitle:'Les racines en images',rootsTxt:'La plupart des mots anglais difficiles sont faits de quelques éléments latins et grecs. Chaque racine a un mot-clé à imaginer : fac = factory, l’usine où l’on fabrique. Apprends la racine une fois, elle ouvre des dizaines de mots.',rootsDrill:'S’entraîner',rootQ:'Que veut dire cette racine ?',keyWord:'Mot-clé',
+ settings:'Réglages',typeMode:'Répondre en tapant',selfMode:'Le dire et vérifier moi-même',daily:'Nouveaux mots par jour',
+ methodTitle:'Comment cette langue applique les techniques',routine:'La routine pour chaque mot',
+ sources:'Sources',course:'Tiré de ton cours',
+ newDue:'nouveaux',dueLbl:'à revoir'}
+};
+const t=k=>T[UI][k];
+
+/* ================= storage ================= */
+const KEY='lm.memory.v1';
+const ROUTES={
+ en:{en:['Front door','Doormat','Coat hooks','Sofa','Television','Dining table','Fridge','Cooker','Bathroom mirror','Bed'],fr:['Porte d’entrée','Paillasson','Portemanteau','Canapé','Télévision','Table','Frigo','Cuisinière','Miroir de la salle de bain','Lit']},
+ de:{en:['Gym entrance','Reception desk','Lockers','Mirror wall','Bench press','Pull-up bar','Squat rack','Treadmill','Water fountain','Exit door'],fr:['Entrée de la salle','Accueil','Casiers','Mur de miroirs','Banc de développé','Barre de traction','Rack à squat','Tapis de course','Fontaine à eau','Porte de sortie']},
+ wo:{en:['Market gate','Fruit stall','Fish stand','Fabric seller','Spice sacks','Butcher','Tea seller','Bus stop','Mosque wall','Taxi rank'],fr:['Entrée du marché','Étal de fruits','Poissonnier','Marchand de tissus','Sacs d’épices','Boucher','Vendeur de thé','Arrêt de bus','Mur de la mosquée','Station de taxis']},
+ kr:{en:['Car park','Beach path','Sand','Lifeguard tower','Parasol','Towel','Water’s edge','Rocks','Beach café','Shower'],fr:['Parking','Chemin de la plage','Sable','Poste de secours','Parasol','Serviette','Bord de l’eau','Rochers','Café de plage','Douche']}
+};
+function freshLang(l){return{it:{},hk:{},route:ROUTES[l][UI].slice(),last:[],log:{},deck:'',said:[]}}
+let M;try{M=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){M=null}
+if(!M||M.v!==1)M={v:1,set:{chunk:5,mode:'type',daily:15},lang:{}};
+M.set=Object.assign({chunk:5,mode:'type',daily:15},M.set||{});
+for(const l of ['en','de','wo','kr'])if(!M.lang[l])M.lang[l]=freshLang(l);
+let saveOK=true;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(M));saveOK=true}catch(e){saveOK=false;toast(UI==='fr'?'Impossible d’enregistrer sur cet appareil.':'Could not save on this device.')}}
+function logDay(l,k,n=1){const d=today();const g=M.lang[l].log;g[d]=g[d]||{n:0,r:0,ok:0};g[d][k]=(g[d][k]||0)+n}
+function streakOf(l){const g=M.lang[l].log;const has=d=>g[d]&&((g[d].n||0)+(g[d].r||0))>0;let d=new Date();if(!has(iso(d)))d=new Date(Date.now()-DAY);let n=0;while(has(iso(d))){n++;d=new Date(d.getTime()-DAY)}return n}
+
+/* spaced repetition: same day, then 1, 3, 7, 14, 30, 60, 120 days */
+const IVL=[0,1,3,7,14,30,60,120];
+function schedule(l,id,res){
+  const it=M.lang[l].it[id];const now=Date.now();
+  it.r=(it.r||0)+1;it.t=now;
+  if(res==='again'){it.l=(it.l||0)+1;it.b=1;it.d=dayStart(now)+DAY}
+  else if(res==='hard'){it.b=Math.max(1,it.b||1);it.d=dayStart(now)+DAY}
+  else{it.b=Math.min(7,(it.b||0)+1);it.d=dayStart(now)+IVL[it.b]*DAY}
+}
+const dueIds=l=>{const now=Date.now();return Object.entries(M.lang[l].it).filter(([id,x])=>x.d<=now&&DATA[l]&&DATA[l].by.has(id)).sort((a,b)=>a[1].d-b[1].d).map(([id])=>id)};
+const dueCount=l=>{const now=Date.now();return Object.values(M.lang[l].it).filter(x=>x.d<=now).length};
+const learnedCount=l=>Object.keys(M.lang[l].it).length;
+const newToday=l=>{const g=M.lang[l].log[today()];return g?g.n||0:0};
+
+/* ================= language data ================= */
+const DATA={};
+const TTS={en:'en-GB',de:'de-DE',kr:'fr-FR',wo:null};
+function say(text,l){try{if(!TTS[l]||!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(text).replace(/\s*\/.*$/,''));u.lang=TTS[l];const v=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.replace('_','-').startsWith(TTS[l].slice(0,2)));if(v)u.voice=v;u.rate=.88;speechSynthesis.speak(u)}catch(e){}}
+const sayBtn=(text,l)=>TTS[l]?`<button class="say" data-say="${esc(text)}" aria-label="${t('listen')}">${SPK}</button>`:'';
+
+const DE_SRC={core:'Core 2500',pfrehm:'Learning German',noble:'Paul Noble',guide:'Assimil Guide',arnet:'Thematic vocabulary',lexique:'Lexique allemand–français',prog:'Progresser',perf:'Assimil Perfectionnement',ll2:'Living Language II',cg:'Conversational German'};
+const DE_ORDER=['core','pfrehm','noble','cg','guide','arnet','ll2','prog','perf','lexique'];
+const EN_C={ttc:'Building a Better Vocabulary',bri:'Vocabulary Words Brilliance',va:'Verbal Advantage'};
+const natural=(a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true});
+function finish(l,items,decks,extra){const by=new Map(items.map(x=>[x.id,x]));DATA[l]=Object.assign({items,decks,by},extra||{});return DATA[l]}
+
+async function loadEN(){
+  const d=await (await fetch('en.json')).json();
+  const items=d.words.map(w=>({id:w.id,w:w.w,m:w.d,pos:w.pos,pron:w.pr||'',ex:w.ex||'',kw:w.pic||'',pic:w.hook||'',note:w.ety||'',deck:w.c}));
+  const decks=['ttc','bri','va'].map(c=>({id:c,name:EN_C[c],ids:items.filter(x=>x.deck===c).map(x=>x.id)}));
+  return finish('en',items,decks,{roots:d.roots});
+}
+async function loadDE(){
+  const d=await (await fetch('../german/data.json')).json();
+  let notes={};try{notes=(JSON.parse(localStorage.getItem('lernkartei.v1')||'{}')||{}).notes||{}}catch(e){}
+  const items=[];
+  for(const c of d.cards){
+    if(!c.de||c.rank===0||c.de==='German')continue;
+    const mEn=c.en||'',mFr=c.fr||c.fr2||'';
+    if(!mEn&&!mFr)continue;
+    const g=['der','die','das'].includes(c.g)?c.g:'';
+    items.push({id:c.id,w:c.de,mEn,mFr,g,pl:c.pl||'',pos:c.pos||'',pron:c.ipa?'['+c.ipa+']':'',ex:c.ex_de||'',exm:c.ex_en||'',pic:notes[c.id]||'',src:c.src,grp:c.grp,rank:c.rank||0});
+  }
+  const groups=new Map();
+  for(const x of items){const k=x.src+'|'+x.grp;if(!groups.has(k))groups.set(k,{id:k,src:x.src,grp:x.grp,ids:[]});groups.get(k).ids.push(x.id)}
+  const BY=new Map(items.map(x=>[x.id,x]));
+  const decks=[...groups.values()].sort((a,b)=>(DE_ORDER.indexOf(a.src)-DE_ORDER.indexOf(b.src))||natural(a.grp,b.grp));
+  for(const dk of decks){if(dk.src==='core')dk.ids.sort((a,b)=>BY.get(a).rank-BY.get(b).rank);dk.name=DE_SRC[dk.src]+' · '+dk.grp}
+  const NUM=[[0,'null'],[1,'eins'],[2,'zwei'],[3,'drei'],[4,'vier'],[5,'fünf'],[6,'sechs'],[7,'sieben'],[8,'acht'],[9,'neun'],[10,'zehn'],[11,'elf'],[12,'zwölf'],[13,'dreizehn'],[14,'vierzehn'],[15,'fünfzehn'],[16,'sechzehn'],[17,'siebzehn'],[18,'achtzehn'],[19,'neunzehn'],[20,'zwanzig'],[21,'einundzwanzig'],[30,'dreißig'],[40,'vierzig'],[50,'fünfzig'],[60,'sechzig'],[70,'siebzig'],[80,'achtzig'],[90,'neunzig'],[100,'hundert'],[1000,'tausend']];
+  return finish('de',items,decks,{nums:NUM.map(([n,w])=>({n,w}))});
+}
+function woPron(w){const PR=[['aa','â'],['àa','â'],['ee','èè'],['ée','é'],['éé','é'],['ii','î'],['oo','ô'],['óo','ô'],['uu','oû'],['ëë','eu'],['c','tch'],['j','dj'],['x','kh'],['ñ','gn'],['ŋ','ng'],['q','kk'],['ë','eu'],['u','ou'],['à','a'],['ó','ô'],['e','è']];
+  const s=w.toLowerCase();let o='';for(let i=0;i<s.length;){if(s[i]==='g'&&/[eiéëè]/.test(s[i+1]||'')){o+='gu';i++;continue}let h=null;for(const [k,v] of PR){if(s.startsWith(k,i)){h=[k,v];break}}if(h){o+=h[1];i+=h[0].length}else{o+=s[i];i++}}return o.charAt(0).toUpperCase()+o.slice(1)}
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.append(s)})}
+async function loadWO(){
+  if(typeof DECKS==='undefined'&&!window.__woDecks){await loadScript('../wolof/js/data.js');}
+  // eslint-disable-next-line no-undef
+  const D=window.__woDecks||DECKS;window.__woDecks=D;
+  const items=[],decks=[],nums=[];
+  for(const d of D){const ids=[];d.rows.trim().split('\n').forEach((line,i)=>{const [w,f,n,p]=line.split('|').map(x=>(x||'').trim());if(!w||!f)return;const id='wo.'+d.id+'.'+i;items.push({id,w,m:f,note:n||'',pron:p||woPron(w),deck:d.id});ids.push(id);
+    if(d.id==='nombres'){const mm=f.match(/\((\d[\d\s]*)\)/);if(mm&&!/franc/i.test(f))nums.push({n:+mm[1].replace(/\s/g,''),w,id})}});
+    decks.push({id:d.id,name:d.name,ids})}
+  return finish('wo',items,decks,{nums});
+}
+async function loadKR(){
+  const d=await (await fetch('kr.json')).json();
+  const items=[],decks=[];const vals=[1,2,3,4,5,6,7,8,9,10,11,12,20,30,100,1000];let nums=[];
+  d.units.forEach((u,ui)=>{const ids=[];u.w.forEach((w,i)=>{const id='kr.'+u.id+'.'+i;items.push({id,w:w[0],m:w[1],deck:u.id});ids.push(id);if(u.id==='konte'&&vals[i]!=null)nums.push({n:vals[i],w:w[0],id})});decks.push({id:u.id,name:(ui+1)+'. '+u.t+' · '+u.sub,ids})});
+  return finish('kr',items,decks,{nums});
+}
+const LOADERS={en:loadEN,de:loadDE,wo:loadWO,kr:loadKR};
+async function ensure(l){if(DATA[l])return DATA[l];return LOADERS[l]()}
+const meaning=(x,l)=>l==='de'?(UI==='fr'?(x.mFr||x.mEn):(x.mEn||x.mFr)):x.m;
+const shown=(x,l)=>l==='de'&&x.g?x.g+' '+x.w:x.w;
+function wordHTML(x,l){if(l==='de'&&x.g)return `<span class="g-${x.g}">${esc(x.g)}</span> ${esc(x.w)}`;return esc(x.w)}
+const isLong=x=>x.w.split(/\s+/).length>3||x.w.length>28;
+const nWords=x=>x.w.split(/\s+/).length;
+
+/* answer checking */
+function alts(w){return String(w).split(/\s*[\/;]\s*/).map(s=>s.replace(/^(der|die|das)\s+/i,'')).filter(Boolean)}
+function judge(input,x,l){
+  const a=norm(String(input).replace(/^(der|die|das)\s+/i,''));if(!a)return{ok:false};
+  for(const cand of alts(x.w)){const b=norm(cand);if(!b)continue;if(a===b)return{ok:true,exact:true};const tol=b.length>=12?2:b.length>=6?1:0;if(lev(a,b)<=tol)return{ok:true,exact:false}}
+  return{ok:false};
+}
+
+/* ================= state & navigation ================= */
+const params=new URLSearchParams(location.search);
+let L=['en','de','wo','kr'].includes(params.get('l'))?params.get('l'):(HUB.memLang||'de');
+let TAB=(location.hash||'').slice(1)||'today';
+let SESS=null,REV=null,NUMS=null,ROOTQ=null;
+function setL(l){L=l;HUB.memLang=l;try{const h=JSON.parse(localStorage.getItem(HUBKEY)||'{}')||{};h.memLang=l;localStorage.setItem(HUBKEY,JSON.stringify(h))}catch(e){}SESS=null;REV=null;NUMS=null;ROOTQ=null;
+  const u=new URL(location.href);u.searchParams.set('l',l);history.replaceState(null,'',u);render()}
+function setUI(u){UI=u;try{const h=JSON.parse(localStorage.getItem(HUBKEY)||'{}')||{};h.lang=u;localStorage.setItem(HUBKEY,JSON.stringify(h))}catch(e){}render()}
+function tabsFor(l){return ['today','learn','review','palace',l==='en'?'roots':'numbers','images','method']}
+function go(tab){TAB=tab;if(tab!=='learn')SESS=null;if(tab!=='review')REV=null;if(tab!=='numbers')NUMS=null;if(tab!=='roots')ROOTQ=null;try{history.replaceState(null,'','#'+tab)}catch(e){}render();window.scrollTo(0,0)}
+
+async function render(){
+  document.documentElement.lang=UI;document.body.dataset.l=L;
+  $('#title').firstChild.textContent=t('title');$('#subtitle').textContent=t('sub');
+  $$('[data-ui]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.ui===UI));b.onclick=()=>setUI(b.dataset.ui)});
+  const C={en:'#FFE15A',de:'#E2563F',wo:'#E0A83A',kr:'#3BA27A'};
+  $('#langs').innerHTML=['en','de','wo','kr'].map(l=>{const d=dueCount(l);return `<button data-l="${l}" aria-pressed="${l===L}"><i style="background:${C[l]}"></i>${t('L')[l]}${d?` <span class="tag c">${d}</span>`:''}</button>`}).join('');
+  $$('#langs button').forEach(b=>b.onclick=()=>setL(b.dataset.l));
+  if(!tabsFor(L).includes(TAB))TAB='today';
+  $('#tabs').innerHTML=tabsFor(L).map(k=>`<button data-tab="${k}" ${k===TAB?'aria-current="page"':''}>${t('tabs')[k]}</button>`).join('');
+  $$('#tabs button').forEach(b=>b.onclick=()=>go(b.dataset.tab));
+  const main=$('#main');
+  if(!DATA[L]){main.innerHTML=`<div class="card"><p class="muted">${t('loading')}</p></div>`;try{await ensure(L)}catch(e){main.innerHTML=`<div class="card"><p>${t('loadFail')}</p></div>`;return}}
+  main.innerHTML='';
+  VIEWS[TAB](main);
+  main.querySelectorAll('[data-say]').forEach(b=>b.onclick=()=>say(b.dataset.say,L));
+}
+
+/* ================= views ================= */
+const VIEWS={};
+function stepsBar(on){return `<div class="steps5">${t('steps').map((s,i)=>`<div class="${i===on?'on':''}"><b>${i+1}</b>${esc(s[0])}</div>`).join('')}</div>`}
+function nextNew(l,deckId,n){const D=DATA[l];const dk=D.decks.find(d=>d.id===deckId)||D.decks[0];return dk.ids.filter(id=>!M.lang[l].it[id]).slice(0,n)}
+function currentDeck(l){const D=DATA[l];let id=M.lang[l].deck;if(!D.decks.find(d=>d.id===id))id=D.decks[0].id;
+  // move on automatically when a set is finished
+  const dk=D.decks.find(d=>d.id===id);if(dk.ids.every(i=>M.lang[l].it[i])){const nx=D.decks.find(d=>d.ids.some(i=>!M.lang[l].it[i]));if(nx)id=nx.id}
+  return id}
+
+VIEWS.today=function(main){
+  const due=dueIds(L).length,deck=currentDeck(L),nn=nextNew(L,deck,M.set.chunk).length;
+  const dk=DATA[L].decks.find(d=>d.id===deck);
+  main.innerHTML=`
+  <section class="card band">
+    <div class="row between"><h2>${t('todayTitle')}</h2><span class="tag">${t('L')[L]}</span></div>
+    <div class="kpis"><div><b>${due}</b><span>${t('due')}</span></div><div><b>${learnedCount(L)}</b><span>${t('learned')}</span></div><div><b>${newToday(L)}</b><span>${t('newToday')}</span></div><div><b>${streakOf(L)}</b><span>${t('streak')}</span></div></div>
+    <p>${due?t('todayDue')(due):t('todayNone')}</p>
+    <div class="row">${due?`<button class="btn primary" id="goRev">${t('startReview')}</button>`:''}${nn?`<button class="btn ${due?'':'primary'}" id="goLearn">${t('startLearn')(nn)}</button>`:''}</div>
+    ${nn?`<p class="small muted">${t('deck')}: ${esc(dk.name)}</p>`:''}
+  </section>
+  <section class="card"><h3>${t('routine')}</h3>${stepsBar(-1)}</section>
+  <section class="card"><h3>${t('fastTitle')}</h3><ol class="small" style="margin:0;padding-left:20px;display:grid;gap:4px">${t('fast').map(s=>`<li>${esc(s)}</li>`).join('')}</ol></section>`;
+  const r=$('#goRev');if(r)r.onclick=()=>go('review');
+  const g=$('#goLearn');if(g)g.onclick=()=>{startLearn(deck);};
+};
+
+/* ---------- Learn session ---------- */
+function startLearn(deckId){
+  const ids=nextNew(L,deckId,M.set.chunk);if(!ids.length){toast(t('allLearned'));return}
+  M.lang[L].deck=deckId;save();
+  SESS={l:L,deck:deckId,ids,phase:'meet',i:0,known:new Set(),walk:{i:0,miss:[],res:{}},fixRound:0,mc:{i:0,q:null}};
+  TAB='learn';try{history.replaceState(null,'','#learn')}catch(e){}render();window.scrollTo(0,0);
+}
+VIEWS.learn=function(main){
+  if(SESS&&SESS.l===L)return SESSV[SESS.phase](main);
+  const D=DATA[L];const deck=currentDeck(L);
+  main.innerHTML=`<section class="card band"><h2>${t('tabs').learn}</h2>${stepsBar(0)}
+   <label for="dk">${t('deck')}<select id="dk">${D.decks.map(d=>{const left=d.ids.filter(i=>!M.lang[L].it[i]).length;return `<option value="${esc(d.id)}" ${d.id===deck?'selected':''}>${esc(d.name)} (${left}/${d.ids.length})</option>`}).join('')}</select></label>
+   <label for="ch">${t('chunk')}<select id="ch">${[3,5,7,10].map(n=>`<option ${n===M.set.chunk?'selected':''}>${n}</option>`).join('')}</select></label>
+   <p class="small muted">${t('chunkHelp')}</p>
+   <p class="small" id="leftTxt"></p>
+   <div class="row"><button class="btn primary" id="st">${t('start')}</button></div></section>`;
+  const upd=()=>{const id=$('#dk').value;const left=D.decks.find(d=>d.id===id).ids.filter(i=>!M.lang[L].it[i]).length;$('#leftTxt').textContent=left?t('left')(left):t('allLearned');$('#st').disabled=!left};
+  $('#dk').onchange=upd;$('#ch').onchange=e=>{M.set.chunk=+e.target.value;save()};upd();
+  $('#st').onclick=()=>startLearn($('#dk').value);
+};
+function sugg(x){return {kw:x.kw||'',pic:x.pic||''}}
+const SESSV={};
+SESSV.meet=function(main){
+  const s=SESS,id=s.ids[s.i],x=DATA[L].by.get(id),hk=M.lang[L].hk[id]||{},sg=sugg(x);
+  const stopN=s.ids.slice(0,s.i).filter(i=>!s.known.has(i)).length;const route=M.lang[L].route;const stop=route[stopN%route.length];
+  main.innerHTML=`<section class="card band">
+    <div class="row between"><span class="tag c">${t('meetEy')(s.i+1,s.ids.length)}</span><span class="tag">${t('L')[L]}</span></div>
+    ${stepsBar(0)}
+    <div class="row" style="align-items:flex-start;gap:12px"><div style="flex:1;min-width:0"><div class="word">${wordHTML(x,L)}</div>${x.pron?`<div class="pron">${esc(x.pron)}</div>`:''}</div>${sayBtn(shown(x,L),L)}</div>
+    <div class="mean">${esc(meaning(x,L))}${x.pos?` <span class="tag">${esc(x.pos)}</span>`:''}${x.g?` <span class="gpill ${x.g}">${x.g}</span>`:''}</div>
+    ${x.pl&&x.g?`<p class="small muted">Plural: ${esc(x.pl)}</p>`:''}
+    ${x.ex?`<div class="ex">${esc(x.ex)}${x.exm?`<i>${esc(x.exm)}</i>`:''}</div>`:''}
+    ${x.note?`<p class="small muted">${esc(x.note)}</p>`:''}
+    <p class="small"><b>${t('sayIt')}</b></p>
+  </section>
+  <section class="card">
+    <div class="row between"><h3>2 · ${t('steps')[1][0]}</h3></div>
+    ${(sg.kw||sg.pic)&&!(hk.k||hk.p)?`<div class="hint"><b>${t('suggested')}</b>${sg.kw?esc(sg.kw)+' · ':''}${esc(sg.pic)} <button class="btn small" id="useS" style="margin-left:6px">${t('useSugg')}</button></div>`:''}
+    <label for="kw">${t('kw')}<input type="text" id="kw" value="${esc(hk.k||'')}" placeholder="${esc(t('kwPh'))}" autocomplete="off"></label>
+    <label for="pc">${t('pic')}<textarea id="pc" placeholder="${esc(t('picPh'))}">${esc(hk.p||'')}</textarea></label>
+  </section>
+  <section class="card">
+    <h3>3 · ${t('placeEy')}</h3>
+    <div class="stop"><b class="n">${stopN+1}</b><div>${t('placeTxt')(stop,stopN+1)}${L==='de'&&x.g?`<div class="small g-${x.g}" style="margin-top:4px">${esc(t('gcue')[x.g])}</div>`:''}</div></div>
+    <div class="row"><button class="btn primary" id="nx">${t('next')}</button><button class="btn" id="ez">${t('easy')}</button></div>
+  </section>`;
+  const us=$('#useS');if(us)us.onclick=()=>{$('#kw').value=sg.kw;$('#pc').value=sg.pic};
+  const keep=()=>{const k=$('#kw').value.trim(),p=$('#pc').value.trim();if(k||p)M.lang[L].hk[id]={k,p};};
+  const adv=(known)=>{keep();if(known)s.known.add(id);else{const n=s.ids.slice(0,s.i).filter(i=>!s.known.has(i)).length;s.place=s.place||{};s.place[id]=n}
+    s.i++;if(s.i>=s.ids.length){s.all=s.ids.filter(i=>!s.known.has(i));s.order=s.all.slice();s.missed=new Set();
+      // words marked as known go straight to a longer interval
+      for(const k of s.known){M.lang[L].it[k]={b:3,d:dayStart()+IVL[3]*DAY,f:Date.now(),r:0,l:0};logDay(L,'n')}
+      M.lang[L].last=s.all.map(i=>[s.place[i],i]);save();
+      s.phase=s.all.length?'walk':'done';s.walk={i:0,miss:[],res:{}};}
+    save();render();window.scrollTo(0,0)};
+  $('#nx').onclick=()=>adv(false);$('#ez').onclick=()=>adv(true);
+};
+function answerBlock(x,l,prefix){
+  const self=M.set.mode==='self'||isLong(x);
+  const gender=l==='de'&&x.g;
+  return `${gender?`<div class="row" role="group" aria-label="Article">${['der','die','das'].map(g=>`<button class="gbtn ${g}" data-g="${g}" aria-pressed="false">${g}</button>`).join('')}</div>`:''}
+   ${self?`<div class="row"><button class="btn primary" id="${prefix}Show">${t('show')}</button></div>`:`<label for="${prefix}In">${t('answer')}<input type="text" id="${prefix}In" autocomplete="off" autocapitalize="off" spellcheck="false"></label><div class="row"><button class="btn primary" id="${prefix}Chk">${t('check')}</button><button class="btn" id="${prefix}Show">${t('show')}</button></div>`}
+   <div id="${prefix}Fb"></div>`;
+}
+/* wires an answer block; cb(result) with result in {'good','hard','again'} */
+function wireAnswer(x,l,prefix,cb,hinted){
+  let g=null;$$('.gbtn').forEach(b=>b.onclick=()=>{g=b.dataset.g;$$('.gbtn').forEach(o=>o.setAttribute('aria-pressed',String(o===b)))});
+  const fb=$('#'+prefix+'Fb');const inp=$('#'+prefix+'In');
+  const done=(res,msg,cls)=>{fb.innerHTML=`<div class="fb ${cls}">${msg}</div><div class="row" style="margin-top:8px"><button class="btn primary" id="${prefix}Go">${UI==='fr'?'Continuer':'Continue'}</button></div>`;say(shown(x,l),l);const go=$('#'+prefix+'Go');go.focus();go.onclick=()=>cb(res);
+    $$('#'+prefix+'Chk,#'+prefix+'Show').forEach(b=>b&&(b.disabled=true));if(inp)inp.disabled=true};
+  const genderRes=(res)=>{if(l==='de'&&x.g&&g!==x.g&&res!=='again')return['hard',t('genderWrong')(x.g+' '+x.w),'mid'];return null};
+  if(inp){inp.focus();inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#'+prefix+'Chk').click()}});
+    $('#'+prefix+'Chk').onclick=()=>{const r=judge(inp.value,x,l);
+      if(!r.ok)return done('again',esc(t('wrong')(shown(x,l))),'bad');
+      const gr=genderRes('good');if(gr)return done(gr[0],esc(gr[1]),gr[2]);
+      const res=hinted&&hinted()?'hard':'good';done(res,r.exact?t('right'):esc(t('almost')(shown(x,l))),'ok')}}
+  $('#'+prefix+'Show').onclick=()=>{
+    if(inp&&inp.value.trim()){$('#'+prefix+'Chk').click();return}
+    fb.innerHTML=`<div class="fb mid"><span class="word" style="font-size:1.4rem">${wordHTML(x,l)}</span></div><div class="row" style="margin-top:8px"><button class="btn ok" id="${prefix}K">${t('knew')}</button><button class="btn" id="${prefix}D">${t('didnt')}</button></div>`;
+    say(shown(x,l),l);$('#'+prefix+'Show').disabled=true;
+    $('#'+prefix+'K').onclick=()=>{const gr=genderRes('good');cb(gr?'hard':(hinted&&hinted()?'hard':'good'))};$('#'+prefix+'D').onclick=()=>cb('again')};
+}
+SESSV.walk=function(main){
+  const s=SESS,w=s.walk,id=s.order[w.i],x=DATA[L].by.get(id),route=M.lang[L].route,n=s.place[id];
+  main.innerHTML=`<section class="card band">
+    <div class="row between"><span class="tag c">${t('walkEy')}</span><span class="tag">${w.i+1}/${s.order.length}</span></div>
+    ${stepsBar(3)}
+    ${w.i===0&&s.fixRound===0?`<p class="small muted">${t('walkTxt')}</p>`:''}
+    <div class="stop"><b class="n">${n+1}</b><div><b>${esc(route[n%route.length])}</b><div class="mean">${esc(meaning(x,L))}</div></div></div>
+    ${answerBlock(x,L,'w')}
+  </section>`;
+  wireAnswer(x,L,'w',res=>{w.res[id]=res;if(res==='again'){w.miss.push(id);s.missed.add(id)}w.i++;
+    if(w.i>=s.order.length){if(w.miss.length&&s.fixRound<2){s.phase='fix'}else{s.phase='mc';s.mc={i:0,ids:shuffle(s.all),ok:0}}}
+    render();window.scrollTo(0,0)});
+};
+SESSV.fix=function(main){
+  const s=SESS,miss=s.walk.miss;
+  main.innerHTML=`<section class="card band"><span class="tag c">${t('fixEy')}</span>${stepsBar(1)}<p>${t('fixTxt')}</p></section>
+  ${miss.map(id=>{const x=DATA[L].by.get(id),hk=M.lang[L].hk[id]||{};return `<section class="card"><div class="row between"><div><div class="word" style="font-size:1.5rem">${wordHTML(x,L)}</div><div>${esc(meaning(x,L))}</div></div>${sayBtn(shown(x,L),L)}</div>
+   <label>${t('kw')}<input type="text" data-k="${esc(id)}" value="${esc(hk.k||'')}" placeholder="${esc(t('kwPh'))}"></label>
+   <label>${t('pic')}<textarea data-p="${esc(id)}" placeholder="${esc(t('picPh'))}">${esc(hk.p||'')}</textarea></label></section>`}).join('')}
+  <div class="row"><button class="btn primary" id="ag">${t('again')}</button></div>`;
+  $('#ag').onclick=()=>{for(const id of miss){const k=$(`[data-k="${CSS.escape(id)}"]`).value.trim(),p=$(`[data-p="${CSS.escape(id)}"]`).value.trim();if(k||p)M.lang[L].hk[id]={k,p}}
+    save();s.fixRound++;s.order=miss.slice();s.walk={i:0,miss:[],res:Object.assign({},s.walk.res)};s.phase='walk';render();window.scrollTo(0,0)};
+};
+SESSV.mc=function(main){
+  const s=SESS,m=s.mc;
+  if(m.i>=m.ids.length||m.ids.length<2){s.phase='use';return render()}
+  const id=m.ids[m.i],x=DATA[L].by.get(id);
+  const pool=DATA[L].items.filter(o=>o.id!==id&&meaning(o,L)&&meaning(o,L)!==meaning(x,L));
+  const sameDeck=pool.filter(o=>(o.deck||o.src+'|'+o.grp)===(x.deck||x.src+'|'+x.grp));
+  const opts=shuffle([x,...shuffle(sameDeck.length>=3?sameDeck:pool).slice(0,3)]);
+  main.innerHTML=`<section class="card band"><div class="row between"><span class="tag c">${t('checkEy')}</span><span class="tag">${m.i+1}/${m.ids.length}</span></div>
+   <div class="row" style="gap:12px"><div class="word" style="flex:1">${wordHTML(x,L)}</div>${sayBtn(shown(x,L),L)}</div>
+   <div class="grid2">${opts.map(o=>`<button class="choice" data-id="${esc(o.id)}">${esc(meaning(o,L))}</button>`).join('')}</div><div id="mcFb"></div></section>`;
+  $$('.choice').forEach(b=>b.onclick=()=>{const ok=b.dataset.id===id;$$('.choice').forEach(c=>{c.disabled=true;if(c.dataset.id===id)c.classList.add('ok')});if(!ok)b.classList.add('bad');else m.ok++;
+    $('#mcFb').innerHTML=`<div class="row" style="margin-top:6px"><button class="btn primary" id="mcGo">${UI==='fr'?'Continuer':'Continue'}</button></div>`;$('#mcGo').focus();$('#mcGo').onclick=()=>{m.i++;render()}});
+};
+SESSV.use=function(main){
+  const s=SESS;
+  main.innerHTML=`<section class="card band"><span class="tag c">${t('useEy')}</span>
+   <p>${t('useTxt')}</p><p class="small muted">${s.all.map(id=>esc(shown(DATA[L].by.get(id),L))).join(' · ')}</p>
+   <label for="sent">${t('sentencePh')}<textarea id="sent"></textarea></label>
+   <div class="row"><button class="btn primary" id="sv">${t('saveFinish')}</button><button class="btn" id="sk">${t('skipFinish')}</button></div></section>`;
+  const fin=(text)=>{const now=Date.now();
+    for(const id of s.all){M.lang[L].it[id]={b:0,d:now+4*HOUR,f:now,r:0,l:s.missed.has(id)?1:0};logDay(L,'n')}
+    if(text){M.lang[L].said.unshift({d:today(),s:text});M.lang[L].said=M.lang[L].said.slice(0,50)}
+    save();s.phase='done';render();window.scrollTo(0,0)};
+  $('#sv').onclick=()=>fin($('#sent').value.trim());$('#sk').onclick=()=>fin('');
+};
+SESSV.done=function(main){
+  const s=SESS,n=(s.all||[]).length+s.known.size;
+  main.innerHTML=`<section class="card band"><h2>${t('doneTitle')(n)}</h2>${stepsBar(4)}<p>${t('doneTxt')}</p>
+   <div class="row"><button class="btn primary" id="more">${t('moreLearn')}</button><button class="btn" id="home">${t('backToday')}</button></div></section>`;
+  $('#more').onclick=()=>{const d=currentDeck(L);startLearn(d)};$('#home').onclick=()=>{SESS=null;go('today')};
+};
+
+/* ---------- Review ---------- */
+VIEWS.review=function(main){
+  if(!REV||REV.l!==L){const ids=dueIds(L);if(!ids.length){main.innerHTML=`<section class="card band"><h2>${t('tabs').review}</h2><p>${t('revNone')}</p>${nextDueLine()}<div class="row"><button class="btn primary" id="gl">${t('tabs').learn}</button></div></section>`;$('#gl').onclick=()=>go('learn');return}
+    REV={l:L,q:ids,i:0,ok:0,n:0,hint:0,seen:new Set()}}
+  const R=REV;
+  if(R.i>=R.q.length){save();main.innerHTML=`<section class="card band"><h2>${t('revDone')(R.n,R.ok)}</h2>${nextDueLine()}<div class="row"><button class="btn primary" id="hm">${t('backToday')}</button></div></section>`;$('#hm').onclick=()=>{REV=null;go('today')};return}
+  const id=R.q[R.i],x=DATA[L].by.get(id),hk=M.lang[L].hk[id]||{},it=M.lang[L].it[id];
+  const place=M.lang[L].last.find(p=>p[1]===id);
+  R.hint=R.hint||0;
+  main.innerHTML=`<section class="card band">
+    <div class="row between"><span class="tag c">${t('revEy')(R.i+1,R.q.length)}</span><span class="tag">${t('box')(it.b||0)}</span></div>
+    <p class="muted small">${t('revPrompt')}</p>
+    <div class="mean" style="font-size:1.3rem;font-family:var(--f-head);font-weight:600">${esc(meaning(x,L))}</div>
+    ${x.exm&&!isLong(x)?'':''}
+    <div id="hintBox">${R.hint>=1?hintHTML(x,hk,place):''}${R.hint>=2?`<div class="hint"><b>${t('hint2')}</b>${esc(x.w.charAt(0))}…</div>`:''}</div>
+    ${answerBlock(x,L,'r')}
+    <div class="row"><button class="btn small" id="hb" ${R.hint>=2?'disabled':''}>${R.hint>=1?t('hint2'):t('hintBtn')}</button></div>
+  </section>
+  ${!(hk.k||hk.p)?`<details class="card"><summary>${t('pic')}</summary><p class="small muted">${t('noHook')}</p><label>${t('kw')}<input type="text" id="nk" placeholder="${esc(t('kwPh'))}"></label><label>${t('pic')}<textarea id="np" placeholder="${esc(t('picPh'))}"></textarea></label></details>`:''}`;
+  $('#hb').onclick=()=>{R.hint++;const keepVal=$('#rIn')&&$('#rIn').value;render().then(()=>{if(keepVal&&$('#rIn'))$('#rIn').value=keepVal})};
+  wireAnswer(x,L,'r',res=>{
+    const nk=$('#nk'),np=$('#np');if(nk&&(nk.value.trim()||np.value.trim()))M.lang[L].hk[id]={k:nk.value.trim(),p:np.value.trim()};
+    if(!R.seen.has(id)){R.seen.add(id);R.n++;if(res==='good')R.ok++;schedule(L,id,res);logDay(L,'r');if(res==='good')logDay(L,'ok')}
+    if(res==='again')R.q.push(id); // see it again before the session ends
+    R.i++;R.hint=0;save();render();window.scrollTo(0,0)},()=>R.hint>0);
+};
+function hintHTML(x,hk,place){
+  const route=M.lang[L].route;
+  let h='';if(hk.k||hk.p)h+=`<div class="hint"><b>${t('pic')}</b>${hk.k?esc(hk.k)+' — ':''}${esc(hk.p)}</div>`;else if(x.kw||x.pic)h+=`<div class="hint"><b>${t('suggested')}</b>${esc(x.kw)} ${esc(x.pic)}</div>`;else h+=`<div class="hint">${t('noHook')}</div>`;
+  if(place)h+=`<div class="stop" style="margin-top:6px"><b class="n">${place[0]+1}</b><div>${esc(route[place[0]%route.length])}</div></div>`;
+  if(L==='de'&&x.g)h+=`<div class="small g-${x.g}" style="margin-top:6px">${esc(t('gcue')[x.g])}</div>`;
+  return h;
+}
+function nextDueLine(){const ds=Object.values(M.lang[L].it).map(x=>x.d).filter(d=>d>Date.now());if(!ds.length)return'';const d=Math.min(...ds);const days=Math.round((dayStart(d)-dayStart())/DAY);return `<p class="small muted">${t('nextDue')}: ${days<=0?t('inSoon'):t('inDays')(days)}</p>`}
+
+/* ---------- Route ---------- */
+VIEWS.palace=function(main){
+  const R=M.lang[L].route;
+  main.innerHTML=`<section class="card band"><h2>${t('routeTitle')}</h2><p class="small muted">${t('routeTxt')}</p>
+   ${R.map((s,i)=>`<label class="stop" for="rs${i}" style="font-weight:600"><b class="n">${i+1}</b><input type="text" id="rs${i}" value="${esc(s)}"></label>`).join('')}
+   <div class="row"><button class="btn primary" id="rsv">${t('routeSave')}</button></div></section>
+   <section class="card"><h3>${t('lastPlaced')}</h3>${M.lang[L].last.length?M.lang[L].last.map(([n,id])=>{const x=DATA[L].by.get(id);if(!x)return'';const hk=M.lang[L].hk[id]||{};return `<div class="li"><b class="n" style="width:28px;height:28px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;flex:0 0 auto;font-size:.85rem">${n+1}</b><div class="t"><b>${esc(R[n%R.length])}</b> · ${wordHTML(x,L)}<div class="small muted">${esc(hk.p||meaning(x,L))}</div></div></div>`}).join(''):`<p class="muted">${t('empty')}</p>`}</section>`;
+  $('#rsv').onclick=()=>{M.lang[L].route=R.map((s,i)=>$('#rs'+i).value.trim()||s);save();toast(t('routeSaved'))};
+};
+
+/* ---------- Numbers (peg method) ---------- */
+const PEGS={en:['Sun','Socks','Traffic light','Car doors','Star','Six-pack of soda','Rainbow','Octopus','Cat','Toes'],fr:['Soleil','Chaussettes','Feu tricolore','Portières','Étoile','Pack de six','Arc-en-ciel','Pieuvre','Chat','Orteils']};
+const NUMNOTE={
+ de:{en:'After ten, German builds numbers: 13–19 are the unit plus -zehn (dreizehn). Tens end in -zig, except dreißig. From 21 the unit comes first: einundzwanzig = one-and-twenty. Learn 1–12 as pictures and the rest as a rule.',fr:'Après dix, l’allemand construit : 13 à 19 = l’unité + -zehn (dreizehn). Les dizaines finissent en -zig, sauf dreißig. Dès 21, l’unité vient d’abord : einundzwanzig = un-et-vingt. Apprends 1 à 12 en images, le reste comme une règle.'},
+ wo:{en:'Wolof counts in fives and tens: learn 1–5 and fukk (10) as pictures, then the rest is arithmetic. 6–9 are juróom + 1–4, 11–19 are fukk ak + 1–9, and 20, 40, 50 are 2, 4, 5 × fukk. That is chunking: six pictures carry thirty numbers.',fr:'Le wolof compte par cinq et par dix : apprends 1 à 5 et fukk (10) en images, le reste est du calcul. 6 à 9 = juróom + 1 à 4, 11 à 19 = fukk ak + 1 à 9, et 20, 40, 50 = 2, 4, 5 × fukk. C’est du découpage : six images portent trente nombres.'},
+ kr:{en:'Creole numbers come from French. Picture only what changes: yonn for un when counting, dé, twa, kat, senk, sis, sèt, uit, nèf, dis. The spelling follows the sound, so say each one aloud.',fr:'Les nombres créoles viennent du français. N’imagine que ce qui change : yonn pour un quand on compte, dé, twa, kat, senk, sis, sèt, uit, nèf, dis. L’orthographe suit le son : dis-les à voix haute.'}};
+VIEWS.numbers=function(main){
+  const D=DATA[L],nums=D.nums||[];
+  if(NUMS)return numDrill(main);
+  const ten=[1,2,3,4,5,6,7,8,9,10].map(n=>nums.find(x=>x.n===n)).filter(Boolean);
+  main.innerHTML=`<section class="card band"><h2>${t('numTitle')}</h2><p class="small muted">${t('numTxt')}</p>
+   <div class="scroll-x"><table><thead><tr><th>#</th><th>${t('peg')}</th><th>${t('L')[L]}</th><th>${t('link')}</th></tr></thead><tbody>
+   ${ten.map(x=>{const k='num:'+x.n;const hk=M.lang[L].hk[k]||{};return `<tr><td class="num">${x.n}</td><td>${esc(PEGS[UI][x.n-1])}</td><td><b>${esc(x.w)}</b> ${sayBtn(x.w,L)}</td><td><input type="text" data-num="${x.n}" value="${esc(hk.p||'')}" placeholder="${UI==='fr'?'ex. un soleil qui…':'e.g. a sun that…'}" aria-label="${t('link')} ${x.n}"></td></tr>`}).join('')}
+   </tbody></table></div>
+   <p class="small">${esc(NUMNOTE[L][UI])}</p>
+   <div class="row"><button class="btn primary" id="nd">${t('drill')} (${nums.length})</button></div></section>`;
+  $$('[data-num]').forEach(inp=>inp.onchange=()=>{const k='num:'+inp.dataset.num;const v=inp.value.trim();if(v)M.lang[L].hk[k]={k:'',p:v};else delete M.lang[L].hk[k];save()});
+  main.querySelectorAll('[data-say]').forEach(b=>b.onclick=()=>say(b.dataset.say,L));
+  $('#nd').onclick=()=>{NUMS={q:shuffle(nums).slice(0,12),i:0,ok:0};render()};
+};
+function numDrill(main){
+  const N=NUMS;if(N.i>=N.q.length){logDay(L,'r',N.q.length);save();main.innerHTML=`<section class="card band"><h2>${t('numDone')(N.ok,N.q.length)}</h2><div class="row"><button class="btn primary" id="again">${t('drill')}</button><button class="btn" id="bk">${t('tabs').numbers}</button></div></section>`;$('#again').onclick=()=>{NUMS={q:shuffle(DATA[L].nums).slice(0,12),i:0,ok:0};render()};$('#bk').onclick=()=>{NUMS=null;render()};return}
+  const x=N.q[N.i];const fake={w:x.w,g:''};const peg=x.n>=1&&x.n<=10?PEGS[UI][x.n-1]:'';const hk=M.lang[L].hk['num:'+x.n]||{};
+  main.innerHTML=`<section class="card band"><div class="row between"><span class="tag c">${t('drillTitle')}</span><span class="tag">${N.i+1}/${N.q.length}</span></div>
+   <div class="big-num">${x.n.toLocaleString(UI==='fr'?'fr-FR':'en-GB')}</div>${peg?`<p class="small muted" style="text-align:center">${t('peg')}: ${esc(peg)}${hk.p?' · '+esc(hk.p):''}</p>`:''}
+   ${answerBlock(fake,L,'n')}</section>`;
+  wireAnswer(fake,L,'n',res=>{if(res==='good')N.ok++;N.i++;render()});
+}
+
+/* ---------- Roots (English) ---------- */
+VIEWS.roots=function(main){
+  const R=DATA.en.roots||[];
+  if(ROOTQ)return rootDrill(main);
+  main.innerHTML=`<section class="card band"><h2>${t('rootsTitle')}</h2><p class="small muted">${t('rootsTxt')}</p><div class="row"><button class="btn primary" id="rd">${t('rootsDrill')}</button></div></section>
+   <section class="card"><div class="list">${R.map(r=>`<div class="li"><div class="t"><b>${esc(r.r)}</b> · ${esc(r.m)}${r.key?` <span class="tag">${t('keyWord')}: ${esc(r.key)}</span>`:''}<div class="small muted">${esc(r.ex.join(', '))}</div></div></div>`).join('')}</div></section>`;
+  $('#rd').onclick=()=>{ROOTQ={q:shuffle(R).slice(0,10),i:0,ok:0};render()};
+};
+function rootDrill(main){
+  const Q=ROOTQ,R=DATA.en.roots;if(Q.i>=Q.q.length){logDay('en','r',Q.q.length);save();main.innerHTML=`<section class="card band"><h2>${t('numDone')(Q.ok,Q.q.length)}</h2><div class="row"><button class="btn primary" id="ra">${t('rootsDrill')}</button><button class="btn" id="rb">${t('tabs').roots}</button></div></section>`;$('#ra').onclick=()=>{ROOTQ={q:shuffle(R).slice(0,10),i:0,ok:0};render()};$('#rb').onclick=()=>{ROOTQ=null;render()};return}
+  const r=Q.q[Q.i];const opts=shuffle([r,...shuffle(R.filter(o=>o.m!==r.m)).slice(0,3)]);
+  main.innerHTML=`<section class="card band"><div class="row between"><span class="tag c">${t('rootQ')}</span><span class="tag">${Q.i+1}/${Q.q.length}</span></div>
+   <div class="word">${esc(r.r)}</div><p class="small muted">${esc(r.ex.slice(0,4).join(', '))}</p>
+   <div class="grid2">${opts.map(o=>`<button class="choice" data-m="${esc(o.m)}">${esc(o.m)}</button>`).join('')}</div><div id="rf"></div></section>`;
+  $$('.choice').forEach(b=>b.onclick=()=>{const ok=b.dataset.m===r.m;if(ok)Q.ok++;$$('.choice').forEach(c=>{c.disabled=true;if(c.dataset.m===r.m)c.classList.add('ok')});if(!ok)b.classList.add('bad');
+    $('#rf').innerHTML=`${r.key?`<div class="hint"><b>${t('keyWord')}</b>${esc(r.key)} → ${esc(r.m)}</div>`:''}<div class="row" style="margin-top:8px"><button class="btn primary" id="rn">${UI==='fr'?'Continuer':'Continue'}</button></div>`;$('#rn').focus();$('#rn').onclick=()=>{Q.i++;render()}});
+}
+
+/* ---------- My images ---------- */
+VIEWS.images=function(main){
+  const hk=M.lang[L].hk;let q='';
+  main.innerHTML=`<section class="card band"><h2>${t('imgsTitle')}</h2><p class="small muted">${t('imgsTxt')}</p>
+   <label for="iq">${t('search')}<input type="text" id="iq" autocomplete="off"></label>
+   <div class="row"><label style="font-weight:600"><span>${t('settings')}</span><select id="md"><option value="type" ${M.set.mode==='type'?'selected':''}>${t('typeMode')}</option><option value="self" ${M.set.mode==='self'?'selected':''}>${t('selfMode')}</option></select></label></div></section>
+   <section class="card"><div class="list" id="il"></div></section>
+   ${M.lang[L].said.length?`<section class="card"><h3>${t('useEy')}</h3>${M.lang[L].said.slice(0,10).map(s=>`<p class="small"><span class="muted">${esc(s.d)}</span> · ${esc(s.s)}</p>`).join('')}</section>`:''}`;
+  $('#md').onchange=e=>{M.set.mode=e.target.value;save()};
+  const draw=()=>{const ids=Object.keys(M.lang[L].it).concat(Object.keys(hk)).filter((v,i,a)=>a.indexOf(v)===i&&DATA[L].by.has(v));
+    const rows=ids.map(id=>[id,DATA[L].by.get(id)]).filter(([id,x])=>!q||norm(x.w+' '+meaning(x,L)+' '+((hk[id]||{}).k||'')+' '+((hk[id]||{}).p||'')).includes(norm(q)));
+    $('#il').innerHTML=rows.length?rows.slice(0,200).map(([id,x])=>{const h=hk[id]||{},it=M.lang[L].it[id];return `<div class="li"><div class="t"><b>${wordHTML(x,L)}</b> · <span class="muted">${esc(meaning(x,L))}</span>${it?` <span class="tag">${t('box')(it.b||0)}</span>`:''}
+      <div class="grid2" style="margin-top:6px"><input type="text" data-ek="${esc(id)}" value="${esc(h.k||'')}" placeholder="${esc(t('kw'))}" aria-label="${t('kw')}"><input type="text" data-ep="${esc(id)}" value="${esc(h.p||'')}" placeholder="${esc(t('pic'))}" aria-label="${t('pic')}"></div></div></div>`}).join(''):`<p class="muted">${t('noImgs')}</p>`;
+    $$('[data-ek],[data-ep]').forEach(inp=>inp.onchange=()=>{const id=inp.dataset.ek||inp.dataset.ep;const k=$(`[data-ek="${CSS.escape(id)}"]`).value.trim(),p=$(`[data-ep="${CSS.escape(id)}"]`).value.trim();if(k||p)hk[id]={k,p};else delete hk[id];save()})};
+  $('#iq').oninput=e=>{q=e.target.value;draw()};draw();
+};
+
+/* ---------- Method ---------- */
+const METHOD={
+ en:{en:[
+  ['Roots become pictures','Each Latin or Greek root gets a key word you can see (fac = factory, cred = credit card). The Roots tab drills them, so one picture unlocks a family of words. From Kevin Flanigan’s Building a Better Vocabulary.'],
+  ['Picture stories','Many words from Vocabulary Words Brilliance arrive with a ready-made sound-alike and scene (decimate = dice + might). They are suggested on the card; make them yours or replace them.'],
+  ['Say it right','Pronunciation notes from Verbal Advantage are shown with the word. Say it twice out loud before you build the picture.'],
+  ['Use it in a sentence','The last step of every session asks for a sentence of your own: a word you have used is a word you own.']],
+  fr:[
+  ['Les racines en images','Chaque racine latine ou grecque a un mot-clé visible (fac = factory, cred = credit card). L’onglet Racines les entraîne : une image ouvre toute une famille de mots. Tiré de Building a Better Vocabulary de Kevin Flanigan.'],
+  ['Les histoires en images','Beaucoup de mots de Vocabulary Words Brilliance arrivent avec leur mot-clé et leur scène (decimate = dice + might). Ils sont proposés sur la carte : garde-les ou remplace-les.'],
+  ['Bien le prononcer','Les notes de prononciation de Verbal Advantage s’affichent avec le mot. Dis-le deux fois à voix haute avant de faire l’image.'],
+  ['L’utiliser dans une phrase','La dernière étape de chaque séance demande une phrase à toi : un mot qu’on a employé est un mot qu’on possède.']]},
+ de:{en:[
+  ['Gender as colour','Every noun is learned with its article. The picture takes the gender’s colour: der blue and heavy, die red and burning, das green and growing (the same cue as your Lernkartei palace). In recall you pick the article before the word.'],
+  ['Sound-alike keywords','German shares many sounds with English and French. Find the sound-alike (Hund → hound, Gift → poison: a poisoned gift) and join it to the meaning in one scene.'],
+  ['Noun, article and plural as one unit','Learn der Tisch, die Tische together: the plural is part of the picture, not a separate fact.'],
+  ['Numbers by peg and rule','1–12 hang on the Sun list; the rest follow two rules (-zehn, -zig, unit before tens).'],
+  ['Hear it daily','The Deutsch Lernen lectures give the listening practice; the studio gives the memory work. Use both.']],
+  fr:[
+  ['Le genre en couleur','Chaque nom s’apprend avec son article. L’image prend la couleur du genre : der bleu et lourd, die rouge et en feu, das vert et en train de pousser (le même repère que ton palais Lernkartei). Au rappel, tu choisis l’article avant le mot.'],
+  ['Mots-clés sonores','L’allemand partage beaucoup de sons avec l’anglais et le français. Trouve le mot qui sonne pareil (Hund → hound, Gift → poison : un cadeau empoisonné) et relie-le au sens dans une seule scène.'],
+  ['Nom, article et pluriel ensemble','Apprends der Tisch, die Tische d’un bloc : le pluriel fait partie de l’image.'],
+  ['Les nombres par crochets et règles','1 à 12 s’accrochent à la liste du Soleil ; le reste suit deux règles (-zehn, -zig, unité avant dizaine).'],
+  ['L’écouter chaque jour','Les leçons Deutsch Lernen donnent l’écoute ; l’atelier donne le travail de mémoire. Utilise les deux.']]},
+ wo:{en:[
+  ['French sound-alikes','Wolof words become pictures through French sound-alikes: ndox (water) → « un dock » flooded with water. The pronunciation guide on each card gives you the sound to work from.'],
+  ['Count in fives and tens','Six pictures (1–5 and 10) carry every number up to 100: the Numbers tab shows the pattern and drills it.'],
+  ['Greetings as one scene','Greeting exchanges are learned in order on your route, like a chain: each reply sits at the next stop.'],
+  ['Literal meanings are hooks','Many cards give the literal meaning (Jàmm nga fanaan? = did you spend the night in peace?). That literal picture is often the best image.']],
+  fr:[
+  ['Mots-clés en français','Les mots wolofs deviennent des images par des sons français : ndox (eau) → « un dock » inondé. Le guide de prononciation sur chaque carte te donne le son de départ.'],
+  ['Compter par cinq et par dix','Six images (1 à 5 et 10) portent tous les nombres jusqu’à 100 : l’onglet Nombres montre la logique et l’entraîne.'],
+  ['Les salutations en une scène','Les échanges de salutations s’apprennent dans l’ordre sur ton parcours, comme une chaîne : chaque réponse est à l’étape suivante.'],
+  ['Le sens littéral comme crochet','Beaucoup de cartes donnent le sens littéral (Jàmm nga fanaan ? = as-tu passé la nuit en paix ?). Cette image littérale est souvent la meilleure.']]},
+ kr:{en:[
+  ['Picture only the difference','Most Creole words come from French. Do not memorise what you already know: make the picture about what changes (ka before a verb for the present, the article -la after the noun: kay-la = the house).'],
+  ['Spelling follows sound','Creole is written as it sounds. Say each word aloud and let the sound carry the spelling.'],
+  ['Short phrases as scenes','Many items are whole phrases (Sa ou fè?). Place the whole phrase at one stop and picture the situation where you would say it.'],
+  ['Numbers by peg','1–10 hang on the Sun list; only the forms that differ from French need an image.']],
+  fr:[
+  ['N’imaginer que la différence','La plupart des mots créoles viennent du français. Ne mémorise pas ce que tu sais déjà : fais l’image sur ce qui change (ka devant le verbe pour le présent, l’article -la après le nom : kay-la = la maison).'],
+  ['L’orthographe suit le son','Le créole s’écrit comme il se prononce. Dis chaque mot à voix haute et laisse le son porter l’orthographe.'],
+  ['Les petites phrases en scènes','Beaucoup d’éléments sont des phrases entières (Sa ou fè ?). Place toute la phrase à une étape et imagine la situation où tu la dirais.'],
+  ['Les nombres par crochets','1 à 10 s’accrochent à la liste du Soleil ; seules les formes différentes du français demandent une image.']]}
+};
+const ROUTINE={en:[
+  ['Meet it','Hear it, say it twice, see it in a sentence. Most forgetting is never having really noticed (Kwik’s MOM: Motivation, Observation, Mechanics).'],
+  ['Turn it into a picture','Find a sound-alike keyword and join it to the meaning in one vivid scene: two images, touching, moving, exaggerated (Kwik’s TIP and keyword substitution; GMS: connect two images at a time).'],
+  ['Place it','Put the scene at the next stop of your route (the location method). Small chunks of five go on five stops.'],
+  ['Recall it now','Walk the route and produce each word from its place and meaning. Fix every miss with a fresh picture before you repeat (GMS active repetition: test, correct, then repeat).'],
+  ['Space it','Reviews come back the same day, then after 1, 3, 7, 14, 30, 60 and 120 days. When you are stuck, the hint is your own picture, not the answer.']],
+ fr:[
+  ['Le rencontrer','L’écouter, le dire deux fois, le voir dans une phrase. On oublie surtout ce qu’on n’a jamais vraiment remarqué (MOM de Kwik : Motivation, Observation, Mécanique).'],
+  ['En faire une image','Trouve un mot-clé qui sonne pareil et relie-le au sens dans une scène vive : deux images, en contact, en mouvement, exagérées (TIP et substitution de Kwik ; GMS : relier deux images à la fois).'],
+  ['Le placer','Pose la scène à l’étape suivante de ton parcours (la méthode des lieux). Des lots de cinq vont sur cinq étapes.'],
+  ['Le rappeler tout de suite','Refais le parcours et retrouve chaque mot à partir de son lieu et de son sens. Répare chaque oubli avec une image neuve avant de répéter (répétition active GMS : tester, corriger, puis répéter).'],
+  ['L’espacer','Les révisions reviennent le jour même, puis après 1, 3, 7, 14, 30, 60 et 120 jours. Quand tu bloques, l’indice est ta propre image, pas la réponse.']]};
+const SOURCES=[
+ ['Superbrain','Jim Kwik'],['Giordano Memorization System (School of Phenomenal Memory)','Vladimir A. Kozarenko'],['Learning on Steroids','Scott H. Young'],
+ ['Building a Better Vocabulary','Kevin Flanigan'],['Vocabulary Words Brilliance','Lewis Angel'],['Verbal Advantage','Charles Harrington Elster'],
+ ['Lernkartei word sources: Core 2500 frequency dictionary, Learning German, Paul Noble, Assimil, Living Language',''],['Jàng Wolof and Kréyòl Matinik course material','']];
+VIEWS.method=function(main){
+  main.innerHTML=`<section class="card band"><h2>${t('routine')}</h2>${stepsBar(-1)}
+    <ol style="margin:0;padding-left:20px;display:grid;gap:8px">${ROUTINE[UI].map(([h,p])=>`<li><b>${esc(h)}.</b> ${esc(p)}</li>`).join('')}</ol></section>
+   <section class="card"><h3>${t('methodTitle')}: ${t('L')[L]}</h3>${METHOD[L][UI].map(([h,p])=>`<div><b>${esc(h)}</b><p class="small">${esc(p)}</p></div>`).join('')}</section>
+   <section class="card"><h3>${t('sources')}</h3>${SOURCES.map(([a,b])=>`<div class="src"><b>${esc(a)}</b>${b?`<div class="small muted">${esc(b)}</div>`:''}</div>`).join('')}</section>`;
+};
+
+/* ================= start ================= */
+window.addEventListener('pageshow',()=>{if(!SESS&&!REV)render()});
+window.addEventListener('hashchange',()=>{const h=(location.hash||'').slice(1);if(h&&h!==TAB&&tabsFor(L).includes(h))go(h)});
+render();
+})();
+</script>
+</body>
+</html>
